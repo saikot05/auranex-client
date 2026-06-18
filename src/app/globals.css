@@ -1,3 +1,31 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 @plugin "daisyui";
+@custom-variant dark (&:where(.dark, .dark *));
+@utility bg-theme {
+    background-color: #ffffff;
+    @variant dark {
+        background-color: #050505;
+    }
+}
+
+@utility text-theme {
+    color: #18181b;
+    @variant dark {
+        color: #ffffff;
+    }
+}
+
+@utility text-muted-theme {
+    color: var(--color-zinc-600);
+    @variant dark {
+        color: var(--color-zinc-400);
+    }
+}
+
+@utility bg-footer-theme {
+    background-color: var(--color-slate-50);
+    @variant dark {
+        background-color: #050505;
+    }
+}

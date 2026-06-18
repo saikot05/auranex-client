@@ -33,7 +33,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-[#050505] text-zinc-400 pt-16 pb-8 border-t border-zinc-900">
+    <footer className="w-full bg-footer-theme text-muted-theme pt-16 pb-8 border-t border-zinc-200 dark:border-zinc-900 transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 pb-12">
@@ -44,7 +44,7 @@ export default function Footer() {
                 <FaHeartbeat className="text-white h-5 w-5 animate-pulse" />
               </div>
               <div className="flex flex-col leading-none">
-                <span className="font-bold text-base text-white tracking-wide">Auranex</span>
+                <span className="font-bold text-base text-theme tracking-wide">Auranex</span>
                 <span className="font-medium text-xs text-zinc-500">Health Systems</span>
               </div>
             </Link>
@@ -53,12 +53,12 @@ export default function Footer() {
               Providing compassionate and professional healthcare connectivity for your family's well-being.
             </p>
 
-            <div className="mt-2 rounded-xl bg-zinc-950 border border-zinc-900 p-4 max-w-xs flex items-center justify-between gap-4">
+            <div className="mt-2 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 p-4 max-w-xs flex items-center justify-between gap-4 transition-colors duration-500">
               <div>
-                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Emergency Hotline</h4>
-                <p className="text-lg font-black text-blue-500 mt-0.5">10655</p>
+                <h4 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Emergency Hotline</h4>
+                <p className="text-lg font-black text-blue-600 dark:text-blue-500 mt-0.5">10655</p>
               </div>
-              <div className="h-9 w-9 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-500">
+              <div className="h-9 w-9 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-500">
                 <FaPhoneAlt className="h-4 w-4 animate-bounce" />
               </div>
             </div>
@@ -67,7 +67,7 @@ export default function Footer() {
           <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
             {footerSections.map((section) => (
               <div key={section.title} className="flex flex-col gap-4">
-                <h3 className="text-blue-500 font-semibold text-sm sm:text-base tracking-wide">
+                <h3 className="text-blue-600 dark:text-blue-500 font-semibold text-sm sm:text-base tracking-wide">
                   {section.title}
                 </h3>
                 <ul className="flex flex-col gap-3">
@@ -75,7 +75,7 @@ export default function Footer() {
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-zinc-400 hover:text-white text-sm font-normal transition-colors duration-200"
+                        className="text-muted-theme hover:text-theme text-sm font-normal transition-colors duration-200"
                       >
                         {link.label}
                       </Link>
@@ -87,18 +87,18 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="h-[1px] w-full bg-zinc-900" aria-hidden="true" />
+        <div className="h-[1px] w-full bg-zinc-200 dark:bg-zinc-900 transition-colors duration-500" aria-hidden="true" />
 
         <div className="pt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-6">
           
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-xs text-zinc-600 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-xs text-zinc-400 dark:text-zinc-600 text-center sm:text-left">
             <span>&copy; {new Date().getFullYear()} Auranex Health. All rights reserved.</span>
             <div className="flex items-center gap-4">
-              <Link href="/terms" className="hover:text-zinc-400 transition-colors duration-200">
+              <Link href="/terms" className="hover:text-theme transition-colors duration-200">
                 Terms & Policy
               </Link>
-              <span className="text-zinc-800" aria-hidden="true">—</span>
-              <Link href="/privacy" className="hover:text-zinc-400 transition-colors duration-200">
+              <span className="text-zinc-300 dark:text-zinc-800 transition-colors duration-500" aria-hidden="true">—</span>
+              <Link href="/privacy" className="hover:text-theme transition-colors duration-200">
                 Privacy Guideline
               </Link>
             </div>
@@ -109,7 +109,7 @@ export default function Footer() {
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-9 h-9 bg-[#121212] hover:bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white transition-colors duration-200 border border-zinc-800/40"
+              className="w-9 h-9 bg-white dark:bg-[#121212] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-white transition-all duration-200 border border-zinc-200 dark:border-zinc-800/40"
               aria-label="Facebook"
             >
               <FaFacebookF className="h-4 w-4" />
@@ -129,7 +129,7 @@ export default function Footer() {
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-9 h-9 bg-[#121212] hover:bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white transition-colors duration-200 border border-zinc-800/40"
+              className="w-9 h-9 bg-white dark:bg-[#121212] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-pink-600 dark:hover:text-white transition-all duration-200 border border-zinc-200 dark:border-zinc-800/40"
               aria-label="Instagram"
             >
               <FaInstagram className="h-4 w-4" />
@@ -139,7 +139,7 @@ export default function Footer() {
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-9 h-9 bg-[#121212] hover:bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white transition-colors duration-200 border border-zinc-800/40"
+              className="w-9 h-9 bg-white dark:bg-[#121212] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-blue-700 dark:hover:text-white transition-all duration-200 border border-zinc-200 dark:border-zinc-800/40"
               aria-label="LinkedIn"
             >
               <FaLinkedinIn className="h-4 w-4" />

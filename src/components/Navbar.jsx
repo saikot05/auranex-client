@@ -32,10 +32,12 @@ export default function Navbar() {
   };
 
   if (isLoggedIn) {
-    navLinks.push({
-      label: "Dashboard",
-      href: dashboardLinks[userRole] || "/dashboard",
-    });
+    if (!navLinks.some(link => link.label === "Dashboard")) {
+      navLinks.push({
+        label: "Dashboard",
+        href: dashboardLinks[userRole] || "/dashboard",
+      });
+    }
   }
 
   const handleLogOut = () => {
@@ -47,6 +49,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-blue-500/10 dark:border-blue-500/20 bg-blue-50/80 dark:bg-[#0B132B]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 shadow-lg shadow-blue-500/20 transition-transform duration-300 group-hover:scale-105">
             <HeartPulse className="text-white h-5 w-5 animate-pulse" />
@@ -56,6 +59,7 @@ export default function Navbar() {
           </span>
         </Link>
 
+        {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-4">
           <ul className="flex items-center gap-1 rounded-full border border-blue-500/10 dark:border-blue-500/20 bg-blue-500/5 dark:bg-blue-500/10 px-2 py-1.5">
             {navLinks.map((link) => (
@@ -70,6 +74,7 @@ export default function Navbar() {
             ))}
           </ul>
 
+          {/* Theme Toggle Button - Fixed Hydration Mismatch */}
           <Button
             isIconOnly
             variant="light"
@@ -82,20 +87,22 @@ export default function Navbar() {
 
           <div className="h-6 w-px bg-blue-500/20 dark:bg-blue-500/30" />
 
+          {/* User Auth Info */}
           <div className="flex items-center gap-3">
             {isLoggedIn ? (
               <div className="relative">
                 <Dropdown placement="bottom-end">
                   <DropdownTrigger>
-                    <button className="flex items-center gap-1 outline-none opacity-90 hover:opacity-100 cursor-pointer">
+                    {/* Fixed: button wrapping standard custom nested attribute error resolved */}
+                    <div className="flex items-center gap-1 opacity-90 hover:opacity-100 cursor-pointer outline-none">
                       <Avatar
                         isBordered
-                        className="w-9 h-9 ring-2 ring-blue-500/20"
+                        className="w-9 h-9 border-2 border-blue-500"
                         color="primary"
                         src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
                       />
                       <ChevronDown className="text-blue-400 h-3.5 w-3.5" />
-                    </button>
+                    </div>
                   </DropdownTrigger>
                   <DropdownMenu 
                     aria-label="User Actions" 
@@ -131,6 +138,7 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Mobile View Navigation */}
         <div className="flex lg:hidden items-center gap-2">
           <Button
             isIconOnly
@@ -144,9 +152,9 @@ export default function Navbar() {
           {isLoggedIn && (
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
-                <button className="outline-none">
-                  <Avatar isBordered className="w-8 h-8" color="primary" src="https://i.pravatar.cc/150?u=a042581f4e29026704d" />
-                </button>
+                <div className="cursor-pointer outline-none">
+                  <Avatar isBordered className="w-8 h-8 border-2 border-blue-500" color="primary" src="https://i.pravatar.cc/150?u=a042581f4e29026704d" />
+                </div>
               </DropdownTrigger>
               <DropdownMenu aria-label="Mobile User Actions" className="bg-white dark:bg-[#0B132B] border border-blue-500/10 !absolute !z-[100] p-1 shadow-xl rounded-xl min-w-[160px]">
                 <DropdownItem key="my_dashboard" href={dashboardLinks[userRole]}>My Dashboard</DropdownItem>
@@ -173,6 +181,7 @@ export default function Navbar() {
 
       </div>
 
+      {/* Mobile Drawer */}
       {isMenuOpen && (
         <div className="border-t border-blue-500/10 dark:border-blue-500/20 bg-white dark:bg-[#0B132B] lg:hidden absolute left-0 w-full shadow-2xl z-50">
           <div className="space-y-2 px-4 py-6">
