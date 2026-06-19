@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from "@heroui/react";
 import { useTheme } from "next-themes";
@@ -8,7 +8,7 @@ import { HeartPulse, ChevronDown, Sun, Moon } from "@gravity-ui/icons";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const [userRole] = useState("Patient");
 
   const { theme, setTheme } = useTheme();
@@ -16,14 +16,11 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
+    const savedAuth = localStorage.getItem("isLoggedIn");
+    if (savedAuth === "true") {
+      setIsLoggedIn(true);
+    }
   }, []);
-
-  const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "Find Doctors", href: "/doctors" },
-    { label: "About Us", href: "/about" },
-    { label: "Contact Us", href: "/contact" },
-  ];
 
   const dashboardLinks = {
     Patient: "/dashboard/patient",
@@ -31,17 +28,26 @@ export default function Navbar() {
     Admin: "/dashboard/admin",
   };
 
-  if (isLoggedIn) {
-    if (!navLinks.some(link => link.label === "Dashboard")) {
-      navLinks.push({
+  const navLinks = useMemo(() => {
+    const baseLinks = [
+      { label: "Home", href: "/" },
+      { label: "Find Doctors", href: "/doctors" },
+      { label: "About Us", href: "/about" },
+      { label: "Contact Us", href: "/contact" },
+    ];
+
+    if (isLoggedIn) {
+      baseLinks.push({
         label: "Dashboard",
         href: dashboardLinks[userRole] || "/dashboard",
       });
     }
-  }
+    return baseLinks;
+  }, [isLoggedIn, userRole]);
 
   const handleLogOut = () => {
     setIsLoggedIn(false);
+    localStorage.removeItem("isLoggedIn");
     setIsMenuOpen(false);
   };
 
@@ -49,7 +55,6 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-blue-500/10 dark:border-blue-500/20 bg-blue-50/80 dark:bg-[#0B132B]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 shadow-lg shadow-blue-500/20 transition-transform duration-300 group-hover:scale-105">
             <HeartPulse className="text-white h-5 w-5 animate-pulse" />
@@ -59,7 +64,6 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-4">
           <ul className="flex items-center gap-1 rounded-full border border-blue-500/10 dark:border-blue-500/20 bg-blue-500/5 dark:bg-blue-500/10 px-2 py-1.5">
             {navLinks.map((link) => (
@@ -74,7 +78,6 @@ export default function Navbar() {
             ))}
           </ul>
 
-          {/* Theme Toggle Button - Fixed Hydration Mismatch */}
           <Button
             isIconOnly
             variant="light"
@@ -87,13 +90,11 @@ export default function Navbar() {
 
           <div className="h-6 w-px bg-blue-500/20 dark:bg-blue-500/30" />
 
-          {/* User Auth Info */}
           <div className="flex items-center gap-3">
-            {isLoggedIn ? (
+            {mounted && isLoggedIn ? (
               <div className="relative">
                 <Dropdown placement="bottom-end">
                   <DropdownTrigger>
-                    {/* Fixed: button wrapping standard custom nested attribute error resolved */}
                     <div className="flex items-center gap-1 opacity-90 hover:opacity-100 cursor-pointer outline-none">
                       <Avatar
                         isBordered
@@ -126,19 +127,20 @@ export default function Navbar() {
                 </Dropdown>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/login" className="text-sm font-semibold text-blue-600 dark:text-blue-400 px-3 py-2 hover:opacity-80 transition whitespace-nowrap">
-                  Login
-                </Link>
-                <Button as={Link} href="/register" size="md" radius="lg" className="bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/10 hover:bg-blue-700">
-                  Register
-                </Button>
-              </div>
+              mounted && (
+                <div className="flex items-center gap-2">
+                  <Link href="/auth/signin" className="text-sm font-semibold text-blue-600 dark:text-blue-400 px-3 py-2 hover:opacity-80 transition whitespace-nowrap">
+                    Login
+                  </Link>
+                  <Button as={Link} href="/auth/signup" size="md" radius="lg" className="bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/10 hover:bg-blue-700">
+                    Register
+                  </Button>
+                </div>
+              )
             )}
           </div>
         </div>
 
-        {/* Mobile View Navigation */}
         <div className="flex lg:hidden items-center gap-2">
           <Button
             isIconOnly
@@ -149,7 +151,7 @@ export default function Navbar() {
             {mounted && theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
 
-          {isLoggedIn && (
+          {mounted && isLoggedIn && (
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
                 <div className="cursor-pointer outline-none">
@@ -181,7 +183,6 @@ export default function Navbar() {
 
       </div>
 
-      {/* Mobile Drawer */}
       {isMenuOpen && (
         <div className="border-t border-blue-500/10 dark:border-blue-500/20 bg-white dark:bg-[#0B132B] lg:hidden absolute left-0 w-full shadow-2xl z-50">
           <div className="space-y-2 px-4 py-6">
@@ -199,10 +200,10 @@ export default function Navbar() {
               ))}
             </ul>
 
-            {!isLoggedIn && (
+            {mounted && !isLoggedIn && (
               <div className="border-t border-blue-500/10 dark:border-blue-500/20 pt-4 flex flex-col gap-2.5">
                 <Link
-                  href="/login"
+                  href="/auth/signin"
                   className="rounded-xl text-center py-3 text-base font-medium text-blue-600 dark:text-blue-400 bg-blue-500/5"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -210,7 +211,7 @@ export default function Navbar() {
                 </Link>
                 <Button
                   as={Link}
-                  href="/register"
+                  href="/auth/signup"
                   className="bg-blue-600 text-white font-semibold py-6 text-base"
                   radius="xl"
                   onClick={() => setIsMenuOpen(false)}
