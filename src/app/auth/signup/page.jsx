@@ -78,15 +78,15 @@ export default function SignupPage() {
 
     const handleGoogleSignup = async () => {
         setError("");
-        setIsGoogleLoading(true); // ← was missing
+        setIsGoogleLoading(true);
         try {
-            await authClient.signIn.social({ // ← use authClient, not signIn
+            await authClient.signIn.social({ 
                 provider: "google",
                 callbackURL: redirectTo,
             });
         } catch (err) {
             setError("Failed to initialize Google login.");
-            setIsGoogleLoading(false); // ← only reset on error; success redirects away
+            setIsGoogleLoading(false);
         }
     };
 
