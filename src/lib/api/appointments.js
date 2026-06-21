@@ -20,3 +20,24 @@ export const getAppointments = async(email) => {
         return [];
     }
 };
+
+export const getPaymentHistory = async(email) => {
+    try {
+        const res = await fetch(`${baseUrl}/api/appointments/payments/${email}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: 'no-store'
+        });
+
+        if (!res.ok) {
+            throw new Error("Failed to fetch payment history");
+        }
+
+        return await res.json();
+    } catch (error) {
+        console.error("getPaymentHistory api error:", error);
+        return { success: false, payments: [] };
+    }
+};
