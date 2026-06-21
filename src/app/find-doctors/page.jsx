@@ -1,0 +1,194 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { Spinner, Card, Button } from "@heroui/react";
+import { Magnifier, StarFill, Suitcase, CircleDollar } from "@gravity-ui/icons";
+import { getAllDoctors } from "@/lib/api/doctors";
+import Image from 'next/image';
+
+export default function FindDoctorsPage() {
+    const [search, setSearch] = useState("");
+    const [specialization, setSpecialization] = useState("");
+    const [sortBy, setSortBy] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    
+    const [doctors, setDoctors] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDoctorsData = async () => {
+            setLoading(true);
+            const data = await getAllDoctors({
+                search,
+                specialization,
+                sortBy,
+                page: currentPage,
+                limit: 6
+            });
+            
+            if (data && data.success) {
+                setDoctors(data.doctors || []);
+                setTotalPages(data.totalPages || 1);
+            } else {
+                setDoctors([]);
+            }
+            setLoading(false);
+        };
+
+        fetchDoctorsData();
+    }, [search, specialization, sortBy, currentPage]);
+
+    return (
+        <div className="w-full min-h-screen bg-[#0B0F19] text-slate-100 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+            <div className="max-w-7xl mx-auto space-y-10">
+                
+                <div className="text-center space-y-3">
+                    <h1 className="text-3xl font-black tracking-tight sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400">
+                        Find Qualified Doctors
+                    </h1>
+                    <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base font-normal">
+                        Search by name, filter by department, or sort by fees and ratings to find your perfect healthcare match instantly.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#131B2E]/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80 shadow-xl">
+                    <div className="relative flex items-center">
+                        <Magnifier className="absolute left-3.5 text-slate-500" size={18} />
+                        <input 
+                            type="text" 
+                            placeholder="Search doctor by name..." 
+                            className="w-full pl-11 pr-4 py-2.5 bg-[#1E293B]/50 border border-slate-700/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm text-slate-200 placeholder-slate-500 transition-all"
+                            value={search}
+                            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+                        />
+                    </div>
+
+                    <select 
+                        className="w-full px-3 py-2.5 bg-[#1E293B]/50 border border-slate-700/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm text-slate-300 transition-all cursor-pointer"
+                        value={specialization}
+                        onChange={(e) => { setSpecialization(e.target.value); setCurrentPage(1); }}
+                    >
+                        <option value="" className="bg-[#131B2E]">All Specializations</option>
+                        <option value="Cardiology" className="bg-[#131B2E]">Cardiology</option>
+                        <option value="Neurology" className="bg-[#131B2E]">Neurology</option>
+                        <option value="Orthopedics" className="bg-[#131B2E]">Orthopedics</option>
+                        <option value="Pediatrics" className="bg-[#131B2E]">Pediatrics</option>
+                        <option value="Dermatology" className="bg-[#131B2E]">Dermatology</option>
+                    </select>
+
+                    <select 
+                        className="w-full px-3 py-2.5 bg-[#1E293B]/50 border border-slate-700/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm text-slate-300 transition-all cursor-pointer"
+                        value={sortBy}
+                        onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                    >
+                        <option value="" className="bg-[#131B2E]">Sort By</option>
+                        <option value="fee_low" className="bg-[#131B2E]">Fee: Low to High</option>
+                        <option value="fee_high" className="bg-[#131B2E]">Fee: High to Low</option>
+                        <option value="experience" className="bg-[#131B2E]">Experience: High to Low</option>
+                        <option value="rating" className="bg-[#131B2E]">Highest Rating</option>
+                    </select>
+                </div>
+
+                {loading ? (
+                    <div className="flex justify-center items-center h-[40vh]">
+                        <Spinner size="lg" label="Searching doctors..." color="primary" />
+                    </div>
+                ) : doctors.length === 0 ? (
+                    <div className="text-center py-16 bg-[#131B2E]/30 rounded-2xl border border-dashed border-slate-800">
+                        <p className="text-slate-400 font-medium">No doctors found matching your criteria.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {doctors.map((doctor) => (
+                            <Card 
+                                key={doctor._id} 
+                                className="group border border-slate-800/70 bg-[#111827] hover:bg-[#151F32] hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-900/20 transition-all duration-300 p-3.5 rounded-2xl flex flex-col justify-between" 
+                                shadow="none"
+                            >
+                                <div>
+                                    <div className="overflow-hidden rounded-xl relative w-full h-[220px] bg-slate-900">
+                                        <Image
+                                            alt={doctor.doctorName}
+                                            className="w-full h-full object-cover object-top rounded-xl transition-transform duration-500 group-hover:scale-105"
+                                            src={doctor.profileImage }
+                                            width={400} 
+                                            height={210}
+                                            priority={true}
+                                            unoptimized
+                                        />
+                                    </div>
+
+                                    <div className="w-full pt-4 space-y-3 text-left">
+                                        <div className="flex justify-between items-start gap-2">
+                                            <h3 className="font-bold text-base sm:text-lg text-slate-100 tracking-tight group-hover:text-blue-400 transition-colors">
+                                                {doctor.doctorName}
+                                            </h3>
+                                            <div className="flex items-center gap-1 bg-amber-500/10 text-amber-400 px-2.5 py-0.5 rounded-full text-xs font-bold shrink-0">
+                                                <StarFill size={12} />
+                                                {doctor.rating || "4.8"}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <p className="text-xs font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-lg inline-block">
+                                                {doctor.specialization}
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="pt-3 border-t border-slate-800/80 text-xs sm:text-sm text-slate-400 space-y-2">
+                                            <div className="flex items-center gap-2.5">
+                                                <Suitcase size={16} className="text-slate-500" />
+                                                <span>{doctor.experience} Years Experience</span>
+                                            </div>
+                                            <div className="flex items-center gap-2.5">
+                                                <CircleDollar size={16} className="text-slate-500" />
+                                                <span className="font-bold text-slate-200">${doctor.consultationFee} <span className="text-xs font-normal text-slate-500">USD</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4">
+                                    <Button 
+                                        color="primary" 
+                                        variant="solid" 
+                                        className="w-full font-semibold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/10 transition-all"
+                                    >
+                                        View Details / Book
+                                    </Button>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+
+                {!loading && totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-2 pt-8 border-t border-slate-800/60">
+                        <Button 
+                            size="sm" 
+                            variant="flat" 
+                            isDisabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            className="rounded-xl font-medium bg-slate-800 hover:bg-slate-700 text-slate-300"
+                        >
+                            Previous
+                        </Button>
+                        <span className="text-xs sm:text-sm text-slate-400 mx-3 font-medium">
+                            Page <span className="text-slate-100 font-bold">{currentPage}</span> of {totalPages}
+                        </span>
+                        <Button 
+                            size="sm" 
+                            variant="flat" 
+                            isDisabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            className="rounded-xl font-medium bg-slate-800 hover:bg-slate-700 text-slate-300"
+                        >
+                            Next
+                        </Button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}

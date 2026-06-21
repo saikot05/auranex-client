@@ -12,7 +12,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'lh3.googleusercontent.com', // ← Google profile photos
+                hostname: 'lh3.googleusercontent.com',
             },
         ],
     },

@@ -12,7 +12,6 @@ export default function PaymentHistoryPage() {
 
     useEffect(() => {
         const fetchPayments = async () => {
-            // যদি সেশন চেক পেন্ডিং থাকে, তবে অপেক্ষা করুন
             if (isPending) return;
 
             if (session?.user?.email) {
@@ -30,7 +29,6 @@ export default function PaymentHistoryPage() {
         fetchPayments();
     }, [session, isPending]);
 
-    // লোডিং চেক: সেশন পেন্ডিং অথবা ডাটা ফেচিং—যেকোনোটি চললে স্পিনার দেখাবে
     if (loading || isPending) {
         return (
             <div className="flex justify-center items-center h-[50vh]">

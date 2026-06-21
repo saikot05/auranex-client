@@ -23,7 +23,7 @@ export function DashboardSidebar() {
         { icon: CalendarCheck, href: "/dashboard/patient/appointments", label: "My Appointments" },
         { icon: CreditCard, href: "/dashboard/patient/payments", label: "Payment History" },
         { icon: Star, href: "/dashboard/patient/reviews", label: "My Reviews" },
-        { icon: Gear, href: "/settings", label: "Settings" },
+    
     ];
 
     const doctorNavLinks = [

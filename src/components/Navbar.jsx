@@ -23,7 +23,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+}, []);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -45,7 +45,7 @@ export default function Navbar() {
 
   const navLinks = useMemo(() => [
     { label: "Home", href: "/" },
-    { label: "Find Doctors", href: "/doctors" },
+    { label: "Find Doctors", href: "/find-doctors" },
     { label: "About Us", href: "/about" },
     { label: "Contact Us", href: "/contact" },
   ], []);
