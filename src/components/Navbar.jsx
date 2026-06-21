@@ -110,7 +110,6 @@ export default function Navbar() {
                     Hi, {user.name || "User"}!
                   </span>
                   <Avatar
-                    isBordered
                     className="w-9 h-9 border-2 border-blue-500"
                     color="primary"
                     src={user.image || `https://i.ibb.co.com/s9NDQSpj/mohamad-azaam-1-O8-CJy1-A7-Wo-unsplash.jpg`}

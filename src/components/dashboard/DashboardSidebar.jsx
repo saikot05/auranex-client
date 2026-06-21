@@ -72,8 +72,8 @@ export function DashboardSidebar() {
                                 onClick={() => setIsOpen(false)}
                                 className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
                                     isActive 
-                                    ? "bg-blue-600 text-white shadow-sm" 
-                                    : "text-foreground hover:bg-default"
+                                        ? "bg-blue-600 text-white shadow-sm" 
+                                        : "text-foreground hover:bg-default"
                                 }`}
                             >
                                 <Icon className={`size-5 ${isActive ? "text-white" : "text-muted-foreground"}`} />
@@ -96,7 +96,7 @@ export function DashboardSidebar() {
                 <span className="font-bold text-blue-600">AuraNex</span>
                 
                 <Button variant="flat" size="sm" onPress={() => setIsOpen(true)}>
-                    <LayoutSideContentLeft />
+                    <LayoutSideContentLeft className="size-4 mr-1" />
                     Menu
                 </Button>
             </div>
