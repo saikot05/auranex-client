@@ -90,3 +90,19 @@ export const getDoctorAppointments = async(email) => {
         return { success: false, data: [] };
     }
 };
+
+export const getDoctorProfile = async(email) => {
+    try {
+        if (!email) return null;
+        const res = await fetch(`${baseUrl}/api/doctors/profile/${encodeURIComponent(email)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            cache: 'no-store'
+        });
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return await res.json();
+    } catch (error) {
+        console.error("getDoctorProfile api error:", error);
+        return null;
+    }
+};

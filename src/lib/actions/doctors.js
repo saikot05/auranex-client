@@ -88,3 +88,18 @@ export const updateAppointmentStatus = async(id, status) => {
         return { success: false, message: "Network error occurred" };
     }
 };
+
+export const updateDoctorProfile = async(email, profileData) => {
+    try {
+        const res = await fetch(`${baseUrl}/api/doctors/update/${encodeURIComponent(email)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profileData),
+        });
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error("updateDoctorProfile action error:", error);
+        return { success: false, message: "Network error occurred" };
+    }
+};

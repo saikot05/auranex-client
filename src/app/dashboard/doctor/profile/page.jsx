@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "@heroui/react";
-import { getDoctorDetails } from "@/lib/api/doctors";
-import { createDoctorSlot } from "@/lib/actions/doctors";
+import { getDoctorProfile } from "@/lib/api/doctors";
+import { updateDoctorProfile } from "@/lib/actions/doctors";
 
 export default function ProfileManagementPage() {
   const doctorEmail = "doctor@example.com";
@@ -18,39 +18,42 @@ export default function ProfileManagementPage() {
   });
 
   const fetchProfile = async () => {
-    const res = await getDoctorDetails(doctorEmail);
-    if (res) {
-      setProfile(res);
+    const res = await getDoctorProfile(doctorEmail);
+    if (res?.success) {
+      setProfile(res.doctor);
       setForm({
-        qualifications: res.qualifications || "",
-        experience: res.experience || "",
-        consultationFee: res.consultationFee || "",
-        availableSlots: res.availableSlots || "",
-        hospitalName: res.hospitalName || "",
-        specialization: res.specialization || "",
+        qualifications: res.doctor.qualifications || "",
+        experience: res.doctor.experience || "",
+        consultationFee: res.doctor.consultationFee || "",
+        availableSlots: res.doctor.availableSlots?.join(", ") || "",
+        hospitalName: res.doctor.hospitalName || "",
+        specialization: res.doctor.specialization || "",
       });
     }
   };
 
   useEffect(() => {
     (async () => {
-      const res = await getDoctorDetails(doctorEmail);
-      if (res) {
-        setProfile(res);
+      const res = await getDoctorProfile(doctorEmail);
+      if (res?.success) {
+        setProfile(res.doctor);
         setForm({
-          qualifications: res.qualifications || "",
-          experience: res.experience || "",
-          consultationFee: res.consultationFee || "",
-          availableSlots: res.availableSlots || "",
-          hospitalName: res.hospitalName || "",
-          specialization: res.specialization || "",
+          qualifications: res.doctor.qualifications || "",
+          experience: res.doctor.experience || "",
+          consultationFee: res.doctor.consultationFee || "",
+          availableSlots: res.doctor.availableSlots?.join(", ") || "",
+          hospitalName: res.doctor.hospitalName || "",
+          specialization: res.doctor.specialization || "",
         });
       }
     })();
   }, []);
 
   const handleSubmit = async () => {
-    await createDoctorSlot({ email: doctorEmail, ...form });
+    await updateDoctorProfile(doctorEmail, {
+      ...form,
+      availableSlots: form.availableSlots.split(",").map((s) => s.trim()),
+    });
     fetchProfile();
   };
 
@@ -62,7 +65,7 @@ export default function ProfileManagementPage() {
       </div>
 
       {profile && (
-        <Card className="mb-4">
+        <Card>
           <Card.Content className="flex items-center gap-4">
             <img
               src={profile.profileImage || "/default-avatar.png"}
@@ -125,26 +128,42 @@ export default function ProfileManagementPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Consultation Fee ($)</label>
+              <label className="block text-sm font-medium mb-1">Consultation Fee (৳)</label>
               <input
                 type="number"
                 value={form.consultationFee}
                 onChange={(e) => setForm({ ...form, consultationFee: e.target.value })}
-                placeholder="e.g. 50"
+                placeholder="e.g. 1000"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Available Slots</label>
+              <label className="block text-sm font-medium mb-1">Available Slots (comma separated)</label>
               <input
                 type="text"
                 value={form.availableSlots}
                 onChange={(e) => setForm({ ...form, availableSlots: e.target.value })}
-                placeholder="e.g. Mon-Fri 9AM-5PM"
+                placeholder="e.g. 10:00 AM - 12:00 PM, 04:00 PM - 06:00 PM"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
+
+          {form.availableSlots && (
+            <div>
+              <p className="text-xs text-gray-400 mb-2">Preview Slots</p>
+              <div className="flex flex-wrap gap-2">
+                {form.availableSlots.split(",").map((slot, i) =>
+                  slot.trim() && (
+                    <span key={i} className="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg">
+                      🕐 {slot.trim()}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+
           <button
             onClick={handleSubmit}
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
