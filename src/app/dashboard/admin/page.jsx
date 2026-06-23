@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { Spinner } from "@heroui/react";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
-import { getAdminStats } from "@/api/admin";
+import { getAdminStats } from "@/lib/api/admin";
+
 
 export default function AdminDashboardHomePage() {
     const { data: session, isPending } = useSession();

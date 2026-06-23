@@ -1,36 +1,50 @@
 "use client";
 
-import { useState } from "react";
-import { Avatar, Chip, Button, Input } from "@heroui/react";
-import { Table } from "@heroui/react";
-import { Person, Check, Xmark } from "@gravity-ui/icons";
-import { updateDoctorVerification } from "@/actions/admin";
+import { useState, useEffect } from "react";
+import { Table, Avatar, Chip, Button, Input } from "@heroui/react";
+import { Lock, Person, TrashBin } from "@gravity-ui/icons";
+
+import { deleteUser, updateUserStatus } from "@/lib/actions/admin";
+import { getAdminUsers } from "@/lib/api/admin";
 
 const statusColor = {
-    verified: "success",
-    pending: "warning",
-    rejected: "danger",
+    active: "success",
+    suspended: "danger",
 };
 
-export default function DoctorsClient({ doctors: initialDoctors }) {
-    const [doctors, setDoctors] = useState(initialDoctors);
+export default function AdminUsersPage() {
+    const [users, setUsers] = useState([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(null);
 
-    const filtered = doctors.filter((d) =>
-        d.doctorName?.toLowerCase().includes(search.toLowerCase()) ||
-        d.specialization?.toLowerCase().includes(search.toLowerCase())
+    useEffect(() => {
+        (async () => {
+            const res = await getAdminUsers();
+            if (res.success) setUsers(res.users);
+        })();
+    }, []);
+
+    const filtered = users.filter((u) =>
+        u.name?.toLowerCase().includes(search.toLowerCase()) ||
+        u.email?.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleVerify = async (id, action) => {
-        setLoading(id + "_" + action);
-        const res = await updateDoctorVerification(id, action);
+    const handleDelete = async (id) => {
+        setLoading(id + "_delete");
+        const res = await deleteUser(id);
         if (res.success) {
-            const statusMap = { verify: "verified", reject: "rejected", cancel: "pending" };
-            setDoctors((prev) =>
-                prev.map((d) =>
-                    d._id === id ? { ...d, verificationStatus: statusMap[action] } : d
-                )
+            setUsers((prev) => prev.filter((u) => u._id !== id));
+        }
+        setLoading(null);
+    };
+
+    const handleStatus = async (id, currentStatus) => {
+        const newStatus = currentStatus === "suspended" ? "active" : "suspended";
+        setLoading(id + "_status");
+        const res = await updateUserStatus(id, newStatus);
+        if (res.success) {
+            setUsers((prev) =>
+                prev.map((u) => u._id === id ? { ...u, status: newStatus } : u)
             );
         }
         setLoading(null);
@@ -40,13 +54,13 @@ export default function DoctorsClient({ doctors: initialDoctors }) {
         <div className="space-y-5">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground">Manage Doctors</h1>
-                    <p className="text-sm text-default-500 mt-0.5">{doctors.length} total doctors</p>
+                    <h1 className="text-2xl font-bold text-foreground">Manage Users</h1>
+                    <p className="text-sm text-default-500 mt-0.5">{users.length} total users</p>
                 </div>
                 <Input
-                    placeholder="Search by name or specialization..."
+                    placeholder="Search by name or email..."
                     value={search}
-                    onValueChange={setSearch}
+                    onChange={(e) => setSearch(e.target.value)}
                     startContent={<Person className="size-4 text-default-400" />}
                     className="w-72"
                     size="sm"
@@ -54,89 +68,96 @@ export default function DoctorsClient({ doctors: initialDoctors }) {
                 />
             </div>
 
-            <Table aria-label="Doctors table" removeWrapper>
-                <Table.Header>
-                    <Table.Column>DOCTOR</Table.Column>
-                    <Table.Column>SPECIALIZATION</Table.Column>
-                    <Table.Column>HOSPITAL</Table.Column>
-                    <Table.Column>FEE</Table.Column>
-                    <Table.Column>EXPERIENCE</Table.Column>
-                    <Table.Column>STATUS</Table.Column>
-                    <Table.Column>ACTIONS</Table.Column>
-                </Table.Header>
-                <Table.Body emptyContent="No doctors found.">
-                    {filtered.map((doctor) => (
-                        <Table.Row key={doctor._id}>
-                            <Table.Cell>
-                                <div className="flex items-center gap-3">
-                                    <Avatar src={doctor.profileImage} name={doctor.doctorName} size="sm" />
-                                    <span className="font-medium text-sm">{doctor.doctorName}</span>
-                                </div>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <span className="text-sm text-default-600">{doctor.specialization}</span>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <span className="text-sm text-default-600">{doctor.hospitalName || "—"}</span>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <span className="text-sm font-medium">৳{doctor.consultationFee}</span>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <span className="text-sm text-default-600">{doctor.experience} yrs</span>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <Chip
-                                    size="sm"
-                                    variant="flat"
-                                    color={statusColor[doctor.verificationStatus] || "default"}
-                                    className="capitalize"
-                                >
-                                    {doctor.verificationStatus || "pending"}
-                                </Chip>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <div className="flex items-center gap-2">
-                                    {doctor.verificationStatus !== "verified" && (
-                                        <Button
+            <Table>
+                <Table.ScrollContainer>
+                    <Table.Content aria-label="Users table">
+                        <Table.Header>
+                            <Table.Column isRowHeader>USER</Table.Column>
+                            <Table.Column>EMAIL</Table.Column>
+                            <Table.Column>ROLE</Table.Column>
+                            <Table.Column>PHONE</Table.Column>
+                            <Table.Column>GENDER</Table.Column>
+                            <Table.Column>STATUS</Table.Column>
+                            <Table.Column>ACTIONS</Table.Column>
+                        </Table.Header>
+                        <Table.Body
+                            renderEmptyState={() => (
+                                <p className="text-center text-sm text-default-400 py-6">No users found.</p>
+                            )}
+                        >
+                            {filtered.map((user) => (
+                                <Table.Row key={user._id} id={user._id}>
+                                    <Table.Cell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-8 rounded-full overflow-hidden bg-default-200 flex items-center justify-center shrink-0">
+                                                {user.photo ? (
+                                                    <img
+                                                        src={user.photo}
+                                                        alt={user.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <span className="text-xs font-medium text-default-600">
+                                                        {user.name?.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <span className="font-medium text-sm">{user.name}</span>
+                                        </div>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <span className="text-sm text-default-600">{user.email}</span>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <Chip size="sm" variant="flat" color="primary" className="capitalize">
+                                            {user.role || "patient"}
+                                        </Chip>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <span className="text-sm text-default-600">{user.phone || "—"}</span>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <span className="text-sm text-default-600 capitalize">{user.gender || "—"}</span>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <Chip
                                             size="sm"
                                             variant="flat"
-                                            color="success"
-                                            isLoading={loading === doctor._id + "_verify"}
-                                            onPress={() => handleVerify(doctor._id, "verify")}
-                                            startContent={<Check className="size-3.5" />}
+                                            color={statusColor[user.status] || "default"}
+                                            className="capitalize"
                                         >
-                                            Verify
-                                        </Button>
-                                    )}
-                                    {doctor.verificationStatus === "verified" && (
-                                        <Button
-                                            size="sm"
-                                            variant="flat"
-                                            color="warning"
-                                            isLoading={loading === doctor._id + "_cancel"}
-                                            onPress={() => handleVerify(doctor._id, "cancel")}
-                                        >
-                                            Revoke
-                                        </Button>
-                                    )}
-                                    {doctor.verificationStatus !== "rejected" && (
-                                        <Button
-                                            size="sm"
-                                            variant="flat"
-                                            color="danger"
-                                            isLoading={loading === doctor._id + "_reject"}
-                                            onPress={() => handleVerify(doctor._id, "reject")}
-                                            isIconOnly
-                                        >
-                                            <Xmark className="size-3.5" />
-                                        </Button>
-                                    )}
-                                </div>
-                            </Table.Cell>
-                        </Table.Row>
-                    ))}
-                </Table.Body>
+                                            {user.status || "active"}
+                                        </Chip>
+                                    </Table.Cell>
+                                    <Table.Cell>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="flat"
+                                                color={user.status === "suspended" ? "success" : "warning"}
+                                                isLoading={loading === user._id + "_status"}
+                                                onPress={() => handleStatus(user._id, user.status)}
+                                                startContent={<Lock className="size-3.5" />}
+                                            >
+                                                {user.status === "suspended" ? "Activate" : "Suspend"}
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="flat"
+                                                color="danger"
+                                                isLoading={loading === user._id + "_delete"}
+                                                onPress={() => handleDelete(user._id)}
+                                                isIconOnly
+                                            >
+                                                <TrashBin className="size-3.5" />
+                                            </Button>
+                                        </div>
+                                    </Table.Cell>
+                                </Table.Row>
+                            ))}
+                        </Table.Body>
+                    </Table.Content>
+                </Table.ScrollContainer>
             </Table>
         </div>
     );
