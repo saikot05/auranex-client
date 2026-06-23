@@ -4,22 +4,26 @@ import React, { useEffect, useState } from "react";
 import { Table, Chip } from "@heroui/react";
 import { getDoctorAppointments } from "@/lib/api/doctors";
 import { updateAppointmentStatus } from "@/lib/actions/doctors";
+import { useSession } from "@/lib/auth-client";
 
 export default function AppointmentRequestsPage() {
   const [appointments, setAppointments] = useState([]);
-  const doctorEmail = "doctor@example.com";
+  const { data: session } = useSession();
+  const doctorEmail = session?.user?.email;
 
   const fetchAppointments = async () => {
+    if (!doctorEmail) return;
     const res = await getDoctorAppointments(doctorEmail);
     if (res?.success) setAppointments(res.data);
   };
 
   useEffect(() => {
+    if (!doctorEmail) return;
     (async () => {
       const res = await getDoctorAppointments(doctorEmail);
       if (res?.success) setAppointments(res.data);
     })();
-  }, []);
+  }, [doctorEmail]);
 
   const handleStatusChange = async (id, status) => {
     await updateAppointmentStatus(id, status);
@@ -29,7 +33,6 @@ export default function AppointmentRequestsPage() {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Appointment Requests</h2>
-
       <Table>
         <Table.ScrollContainer>
           <Table.Content aria-label="Appointment requests table">
@@ -42,9 +45,7 @@ export default function AppointmentRequestsPage() {
             </Table.Header>
             <Table.Body
               renderEmptyState={() => (
-                <p className="text-center text-gray-400 py-4">
-                  No pending appointment requests found.
-                </p>
+                <p className="text-center text-gray-400 py-4">No pending appointment requests found.</p>
               )}
             >
               {appointments.map((app) => (

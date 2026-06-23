@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { Card } from "@heroui/react";
 import { getDoctorProfile } from "@/lib/api/doctors";
 import { updateDoctorProfile } from "@/lib/actions/doctors";
+import { useSession } from "@/lib/auth-client";
 
 export default function ProfileManagementPage() {
-  const doctorEmail = "doctor@example.com";
+  const { data: session } = useSession();
+  const doctorEmail = session?.user?.email;
   const [profile, setProfile] = useState(null);
   const [form, setForm] = useState({
     qualifications: "",
@@ -18,6 +20,7 @@ export default function ProfileManagementPage() {
   });
 
   const fetchProfile = async () => {
+    if (!doctorEmail) return;
     const res = await getDoctorProfile(doctorEmail);
     if (res?.success) {
       setProfile(res.doctor);
@@ -33,6 +36,7 @@ export default function ProfileManagementPage() {
   };
 
   useEffect(() => {
+    if (!doctorEmail) return;
     (async () => {
       const res = await getDoctorProfile(doctorEmail);
       if (res?.success) {
@@ -47,7 +51,7 @@ export default function ProfileManagementPage() {
         });
       }
     })();
-  }, []);
+  }, [doctorEmail]);
 
   const handleSubmit = async () => {
     await updateDoctorProfile(doctorEmail, {
@@ -67,11 +71,7 @@ export default function ProfileManagementPage() {
       {profile && (
         <Card>
           <Card.Content className="flex items-center gap-4">
-            <img
-              src={profile.profileImage || "/default-avatar.png"}
-              alt={profile.doctorName}
-              className="w-16 h-16 rounded-full object-cover border"
-            />
+            <img src={profile.profileImage || "/default-avatar.png"} alt={profile.doctorName} className="w-16 h-16 rounded-full object-cover border" />
             <div>
               <p className="text-lg font-semibold">{profile.doctorName}</p>
               <p className="text-sm text-gray-500">{profile.specialization}</p>
@@ -89,63 +89,27 @@ export default function ProfileManagementPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Specialization</label>
-              <input
-                type="text"
-                value={form.specialization}
-                onChange={(e) => setForm({ ...form, specialization: e.target.value })}
-                placeholder="e.g. Cardiologist"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="text" value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} placeholder="e.g. Cardiologist" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Hospital Name</label>
-              <input
-                type="text"
-                value={form.hospitalName}
-                onChange={(e) => setForm({ ...form, hospitalName: e.target.value })}
-                placeholder="e.g. City General Hospital"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="text" value={form.hospitalName} onChange={(e) => setForm({ ...form, hospitalName: e.target.value })} placeholder="e.g. City General Hospital" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Qualifications</label>
-              <input
-                type="text"
-                value={form.qualifications}
-                onChange={(e) => setForm({ ...form, qualifications: e.target.value })}
-                placeholder="e.g. MBBS, MD"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="text" value={form.qualifications} onChange={(e) => setForm({ ...form, qualifications: e.target.value })} placeholder="e.g. MBBS, MD" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Experience (years)</label>
-              <input
-                type="number"
-                value={form.experience}
-                onChange={(e) => setForm({ ...form, experience: e.target.value })}
-                placeholder="e.g. 10"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="number" value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} placeholder="e.g. 10" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Consultation Fee (৳)</label>
-              <input
-                type="number"
-                value={form.consultationFee}
-                onChange={(e) => setForm({ ...form, consultationFee: e.target.value })}
-                placeholder="e.g. 1000"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="number" value={form.consultationFee} onChange={(e) => setForm({ ...form, consultationFee: e.target.value })} placeholder="e.g. 1000" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Available Slots (comma separated)</label>
-              <input
-                type="text"
-                value={form.availableSlots}
-                onChange={(e) => setForm({ ...form, availableSlots: e.target.value })}
-                placeholder="e.g. 10:00 AM - 12:00 PM, 04:00 PM - 06:00 PM"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <input type="text" value={form.availableSlots} onChange={(e) => setForm({ ...form, availableSlots: e.target.value })} placeholder="e.g. 10:00 AM - 12:00 PM, 04:00 PM - 06:00 PM" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
           </div>
 
@@ -155,19 +119,14 @@ export default function ProfileManagementPage() {
               <div className="flex flex-wrap gap-2">
                 {form.availableSlots.split(",").map((slot, i) =>
                   slot.trim() && (
-                    <span key={i} className="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg">
-                      🕐 {slot.trim()}
-                    </span>
+                    <span key={i} className="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-lg">🕐 {slot.trim()}</span>
                   )
                 )}
               </div>
             </div>
           )}
 
-          <button
-            onClick={handleSubmit}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-          >
+          <button onClick={handleSubmit} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors">
             Save Changes
           </button>
         </Card.Content>

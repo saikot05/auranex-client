@@ -4,26 +4,31 @@ import { useEffect, useState } from "react";
 import { Table, Button, Input, Card } from "@heroui/react";
 import { createDoctorSlot, deleteDoctorSlot } from "@/lib/actions/doctors";
 import { getDoctorSlots } from "@/lib/api/doctors";
+import { useSession } from "@/lib/auth-client";
 
 export default function ManageSchedulePage() {
   const [slots, setSlots] = useState([]);
   const [newSlot, setNewSlot] = useState("");
-  const doctorEmail = "doctor@example.com";
+  const { data: session } = useSession();
+  const doctorEmail = session?.user?.email;
 
   const fetchSlots = async () => {
+    if (!doctorEmail) return;
     const res = await getDoctorSlots(doctorEmail);
     if (res?.success) setSlots(res.data);
   };
 
   useEffect(() => {
+    if (!doctorEmail) return;
     (async () => {
       const res = await getDoctorSlots(doctorEmail);
       if (res?.success) setSlots(res.data);
     })();
-  }, []);
+  }, [doctorEmail]);
 
   const handleAddSlot = async () => {
-    await createDoctorSlot({ email: doctorEmail, time: newSlot });
+    if (!newSlot.trim()) return;
+    await createDoctorSlot({ doctorEmail, time: newSlot });
     setNewSlot("");
     fetchSlots();
   };
