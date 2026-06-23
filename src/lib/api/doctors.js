@@ -58,3 +58,19 @@ export const getDoctorSlots = async(email) => {
         return { success: false, data: [] };
     }
 };
+
+export const getDoctorPrescriptions = async(email) => {
+    try {
+        if (!email) return { success: false, data: [] };
+        const res = await fetch(`${baseUrl}/api/doctor/prescriptions?email=${encodeURIComponent(email)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            cache: 'no-store'
+        });
+        if (!res.ok) throw new Error("Failed to fetch prescriptions");
+        return await res.json();
+    } catch (error) {
+        console.error("getDoctorPrescriptions api error:", error);
+        return { success: false, data: [] };
+    }
+};
