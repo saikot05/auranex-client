@@ -73,3 +73,18 @@ export const deletePrescription = async(id) => {
         return { success: false, message: "Network error occurred" };
     }
 };
+
+export const updateAppointmentStatus = async(id, status) => {
+    try {
+        const res = await fetch(`${baseUrl}/api/appointments/status/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status }),
+        });
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error("updateAppointmentStatus action error:", error);
+        return { success: false, message: "Network error occurred" };
+    }
+};

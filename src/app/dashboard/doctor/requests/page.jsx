@@ -2,26 +2,27 @@
 
 import React, { useEffect, useState } from "react";
 import { Table, Chip } from "@heroui/react";
-import { getDoctorSlots } from "@/lib/api/doctors";
-import { createDoctorSlot } from "@/lib/actions/doctors";
+import { getDoctorAppointments } from "@/lib/api/doctors";
+import { updateAppointmentStatus } from "@/lib/actions/doctors";
 
 export default function AppointmentRequestsPage() {
   const [appointments, setAppointments] = useState([]);
+  const doctorEmail = "doctor@example.com";
 
   const fetchAppointments = async () => {
-    const res = await getDoctorSlots();
+    const res = await getDoctorAppointments(doctorEmail);
     if (res?.success) setAppointments(res.data);
   };
 
   useEffect(() => {
     (async () => {
-      const res = await getDoctorSlots();
+      const res = await getDoctorAppointments(doctorEmail);
       if (res?.success) setAppointments(res.data);
     })();
   }, []);
 
   const handleStatusChange = async (id, status) => {
-    await createDoctorSlot({ id, status });
+    await updateAppointmentStatus(id, status);
     fetchAppointments();
   };
 
@@ -55,7 +56,10 @@ export default function AppointmentRequestsPage() {
                     <Chip
                       size="sm"
                       variant="flat"
-                      color={app.appointmentStatus === "pending" ? "warning" : "success"}
+                      color={
+                        app.appointmentStatus === "pending" ? "warning" :
+                        app.appointmentStatus === "accepted" ? "success" : "danger"
+                      }
                     >
                       {app.appointmentStatus}
                     </Chip>
