@@ -71,7 +71,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Column: Only 3D Frame and Image */}
+          
           <div className="lg:col-span-5 w-full flex justify-center items-center [perspective:1200px]">
             <div className="relative w-full max-w-[420px] aspect-[4/5] rounded-[2.5rem] bg-gradient-to-tr from-blue-500/10 via-cyan-500/5 to-transparent p-3 border border-zinc-200/60 dark:border-zinc-800/50 [transform-style:preserve-3d] [transform:rotateY(-12deg)_rotateX(6deg)] hover:[transform:rotateY(-4deg)_rotateX(2deg)] transition-transform duration-700 ease-out group">
               
