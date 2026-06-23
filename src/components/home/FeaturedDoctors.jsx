@@ -34,7 +34,6 @@ export default function FeaturedDoctors() {
     <section className="py-24 bg-zinc-50 dark:bg-zinc-950 transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header Section */}
         <div className="flex justify-between items-end mb-12">
           <div>
             <h2 className="text-3xl md:text-4xl font-black text-zinc-900 dark:text-zinc-100 mb-2">
@@ -51,7 +50,6 @@ export default function FeaturedDoctors() {
           </Button>
         </div>
 
-        {/* Doctors Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {doctors.map((doctor) => (
             <Card 
@@ -89,7 +87,7 @@ export default function FeaturedDoctors() {
                 <Button 
                   size="md" 
                   fullWidth 
-                  className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/20"
                   onClick={() => router.push(`/find-doctors/${doctor._id}`)}
                 >
                   Book Appointment

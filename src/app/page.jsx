@@ -1,5 +1,7 @@
+import WhyChooseUs from "@/components/home/Choose";
 import FeaturedDoctors from "@/components/home/FeaturedDoctors";
 import Hero from "@/components/home/Hero";
+import HowItWorks from "@/components/home/HowItWorks";
 import MedicalSpecializations from "@/components/home/MedicalSpecializations";
 import PlatformStats from "@/components/home/PlatformStats";
 import SuccessStoriesPage from "@/components/home/SuccessStoriesPage";
@@ -12,6 +14,8 @@ export default function Home() {
       <MedicalSpecializations />
       <PlatformStats />
       <SuccessStoriesPage />
+      <WhyChooseUs />
+      <HowItWorks />
     </main>
   );
 }
