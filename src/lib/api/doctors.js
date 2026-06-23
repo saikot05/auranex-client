@@ -40,3 +40,21 @@ export const getDoctorDetails = async(id) => {
         return null;
     }
 };
+
+export const getDoctorSlots = async(email) => {
+    try {
+        if (!email) return { success: false, data: [] };
+
+        const res = await fetch(`${baseUrl}/api/doctor/slots?email=${encodeURIComponent(email)}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            cache: 'no-store'
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch slots");
+        return await res.json();
+    } catch (error) {
+        console.error("getDoctorSlots api error:", error);
+        return { success: false, data: [] };
+    }
+};

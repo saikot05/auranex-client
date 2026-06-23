@@ -26,7 +26,8 @@ export const auth = betterAuth({
         additionalFields: {
             role: {
                 default: "patient",
-            }
+            },
+
         }
     }
 });
