@@ -12,3 +12,16 @@ export const getMyReviews = async(email) => {
         return { success: false, reviews: [] };
     }
 };
+
+export const getSuccessStories = async() => {
+    try {
+        const res = await fetch(`${baseUrl}/api/success-stories`, {
+            method: 'GET',
+            cache: 'no-store'
+        });
+        if (!res.ok) return { success: false, stories: [] };
+        return await res.json();
+    } catch (error) {
+        return { success: false, stories: [] };
+    }
+};

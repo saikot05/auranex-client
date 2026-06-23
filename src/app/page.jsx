@@ -2,6 +2,7 @@ import FeaturedDoctors from "@/components/home/FeaturedDoctors";
 import Hero from "@/components/home/Hero";
 import MedicalSpecializations from "@/components/home/MedicalSpecializations";
 import PlatformStats from "@/components/home/PlatformStats";
+import SuccessStoriesPage from "@/components/home/SuccessStoriesPage";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <FeaturedDoctors />
       <MedicalSpecializations />
       <PlatformStats />
+      <SuccessStoriesPage />
     </main>
   );
 }

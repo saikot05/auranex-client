@@ -24,51 +24,80 @@ export default function FeaturedDoctors() {
     fetchFeatured();
   }, []);
 
-  if (loading) return <div className="flex justify-center p-20"><Spinner size="lg" /></div>;
+  if (loading) return (
+    <div className="flex justify-center p-20">
+      <Spinner size="lg" color="primary" />
+    </div>
+  );
 
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4">
-      <div className="flex justify-between items-end mb-10">
-        <div>
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white">Featured Doctors</h2>
-          <p className="text-slate-500">Choose from our top-rated specialists.</p>
+    <section className="py-24 bg-zinc-50 dark:bg-zinc-950 transition-colors duration-500">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section */}
+        <div className="flex justify-between items-end mb-12">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-black text-zinc-900 dark:text-zinc-100 mb-2">
+              Featured <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">Doctors</span>
+            </h2>
+            <p className="text-zinc-500 dark:text-zinc-400">Choose from our top-rated specialists for your care.</p>
+          </div>
+          <Button 
+            variant="bordered" 
+            onClick={() => router.push('/find-doctors')} 
+            className="rounded-full border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          >
+            View All <ArrowRight size={16} />
+          </Button>
         </div>
-        <Button variant="flat" onClick={() => router.push('/find-doctors')} className="rounded-xl">
-          View All <ArrowRight />
-        </Button>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {doctors.map((doctor) => (
-          <Card key={doctor._id} className="p-4 rounded-2xl hover:shadow-xl transition-all border border-slate-200 dark:border-slate-800">
-           
-            <motion.div 
-              className="relative w-full h-48 mb-4 overflow-hidden rounded-xl"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
+        {/* Doctors Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {doctors.map((doctor) => (
+            <Card 
+              key={doctor._id} 
+              className="p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-xl transition-all duration-500 group"
             >
-              <Image 
-                src={doctor.profileImage} 
-                alt={doctor.doctorName} 
-                fill 
-                className="object-cover" 
-                unoptimized 
-              />
-            </motion.div>
+              <motion.div 
+                className="relative w-full h-56 mb-4 overflow-hidden rounded-2xl"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Image 
+                  src={doctor.profileImage} 
+                  alt={doctor.doctorName} 
+                  fill 
+                  className="object-cover" 
+                  unoptimized 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </motion.div>
 
-            <h3 className="font-bold text-lg">{doctor.doctorName}</h3>
-            <p className="text-xs text-blue-600 mb-2 font-medium">{doctor.specialization}</p>
-            
-            <div className="flex justify-between text-xs text-slate-500 mb-4">
-               <span><Suitcase size={14} className="inline mr-1"/> {doctor.experience} yr</span>
-               <span className="font-bold text-slate-900 dark:text-white">${doctor.consultationFee}</span>
-            </div>
-            
-            <Button size="sm" fullWidth color="primary" onClick={() => router.push(`/find-doctors/${doctor._id}`)}>
-              Book Now
-            </Button>
-          </Card>
-        ))}
+              <div className="px-1">
+                <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-lg mb-1">{doctor.doctorName}</h3>
+                <p className="text-sm text-blue-600 dark:text-blue-400 mb-4 font-medium">{doctor.specialization}</p>
+                
+                <div className="flex justify-between items-center text-xs text-zinc-500 dark:text-zinc-400 mb-6">
+                   <span className="flex items-center gap-1">
+                     <Suitcase size={14}/> {doctor.experience} yr exp
+                   </span>
+                   <span className="font-bold text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-full">
+                     ${doctor.consultationFee}
+                   </span>
+                </div>
+                
+                <Button 
+                  size="md" 
+                  fullWidth 
+                  className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90"
+                  onClick={() => router.push(`/find-doctors/${doctor._id}`)}
+                >
+                  Book Appointment
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );
