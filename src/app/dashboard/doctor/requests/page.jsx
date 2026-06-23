@@ -1,18 +1,87 @@
 "use client";
 
-import React from 'react';
-import { Card } from "@heroui/react";
+import React, { useEffect, useState } from "react";
+import { Table, Chip } from "@heroui/react";
+import { getDoctorSlots } from "@/lib/api/doctors";
+import { createDoctorSlot } from "@/lib/actions/doctors";
 
 export default function AppointmentRequestsPage() {
-    return (
-        <div className="space-y-6 w-full max-w-5xl mx-auto p-4 animate-in fade-in duration-200">
-            <div>
-                <h1 className="text-2xl font-bold text-foreground">Appointment Requests</h1>
-                <p className="text-sm text-muted-foreground">Manage and confirm patient booking requests.</p>
-            </div>
-            <Card className="p-8 text-center border border-default bg-content1 text-muted-foreground rounded-2xl">
-                Appointment requests list will be integrated here.
-            </Card>
-        </div>
-    );
+  const [appointments, setAppointments] = useState([]);
+
+  const fetchAppointments = async () => {
+    const res = await getDoctorSlots();
+    if (res?.success) setAppointments(res.data);
+  };
+
+  useEffect(() => {
+    (async () => {
+      const res = await getDoctorSlots();
+      if (res?.success) setAppointments(res.data);
+    })();
+  }, []);
+
+  const handleStatusChange = async (id, status) => {
+    await createDoctorSlot({ id, status });
+    fetchAppointments();
+  };
+
+  return (
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6">Appointment Requests</h2>
+
+      <Table>
+        <Table.ScrollContainer>
+          <Table.Content aria-label="Appointment requests table">
+            <Table.Header>
+              <Table.Column isRowHeader>PATIENT NAME</Table.Column>
+              <Table.Column>DATE</Table.Column>
+              <Table.Column>TIME</Table.Column>
+              <Table.Column>STATUS</Table.Column>
+              <Table.Column>ACTIONS</Table.Column>
+            </Table.Header>
+            <Table.Body
+              renderEmptyState={() => (
+                <p className="text-center text-gray-400 py-4">
+                  No pending appointment requests found.
+                </p>
+              )}
+            >
+              {appointments.map((app) => (
+                <Table.Row key={app._id}>
+                  <Table.Cell>{app.patientName}</Table.Cell>
+                  <Table.Cell>{app.appointmentDate}</Table.Cell>
+                  <Table.Cell>{app.appointmentTime}</Table.Cell>
+                  <Table.Cell>
+                    <Chip
+                      size="sm"
+                      variant="flat"
+                      color={app.appointmentStatus === "pending" ? "warning" : "success"}
+                    >
+                      {app.appointmentStatus}
+                    </Chip>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleStatusChange(app._id, "accepted")}
+                        className="px-3 py-1 text-sm rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(app._id, "rejected")}
+                        className="px-3 py-1 text-sm rounded-lg border border-red-500 text-red-500 hover:bg-red-50 transition-colors"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Content>
+        </Table.ScrollContainer>
+      </Table>
+    </div>
+  );
 }

@@ -10,14 +10,17 @@ export default function ManageSchedulePage() {
   const [newSlot, setNewSlot] = useState("");
   const doctorEmail = "doctor@example.com";
 
-  useEffect(() => {
-    fetchSlots();
-  }, []);
-
   const fetchSlots = async () => {
     const res = await getDoctorSlots(doctorEmail);
     if (res?.success) setSlots(res.data);
   };
+
+  useEffect(() => {
+    (async () => {
+      const res = await getDoctorSlots(doctorEmail);
+      if (res?.success) setSlots(res.data);
+    })();
+  }, []);
 
   const handleAddSlot = async () => {
     await createDoctorSlot({ email: doctorEmail, time: newSlot });
