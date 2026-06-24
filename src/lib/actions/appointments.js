@@ -1,25 +1,14 @@
 "use server";
 
+import { authFetch } from "@/lib/proxy";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-const getAuthHeaders = async () => {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("auranex_jwt")?.value;
-    return {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-};
-
 export const rescheduleAppointmentAction = async (id, newDate) => {
     try {
-        const headers = await getAuthHeaders();
-        const res = await fetch(`${baseUrl}/api/appointments/reschedule/${id}`, {
+        const res = await authFetch(`${baseUrl}/api/appointments/reschedule/${id}`, {
             method: "PATCH",
-            headers,
             body: JSON.stringify({ newDate }),
         });
 
@@ -39,10 +28,8 @@ export const rescheduleAppointmentAction = async (id, newDate) => {
 
 export const cancelAppointmentAction = async (id) => {
     try {
-        const headers = await getAuthHeaders();
-        const res = await fetch(`${baseUrl}/api/appointments/cancel/${id}`, {
+        const res = await authFetch(`${baseUrl}/api/appointments/cancel/${id}`, {
             method: "PATCH",
-            headers,
         });
 
         if (!res.ok) throw new Error("Failed to cancel");

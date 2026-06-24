@@ -1,10 +1,11 @@
+import { authFetch } from "@/lib/proxy";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const deleteUser = async(id) => {
     try {
-        const res = await fetch(`${baseUrl}/api/admin/users/${id}`, {
+        const res = await authFetch(`${baseUrl}/api/admin/users/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
         });
         return await res.json();
     } catch (error) {
@@ -15,9 +16,8 @@ export const deleteUser = async(id) => {
 
 export const updateUserStatus = async(id, status) => {
     try {
-        const res = await fetch(`${baseUrl}/api/admin/users/${id}/status`, {
+        const res = await authFetch(`${baseUrl}/api/admin/users/${id}/status`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status }),
         });
         return await res.json();
@@ -29,9 +29,8 @@ export const updateUserStatus = async(id, status) => {
 
 export const updateDoctorVerification = async(id, action) => {
     try {
-        const res = await fetch(`${baseUrl}/api/admin/doctors/${id}/verify`, {
+        const res = await authFetch(`${baseUrl}/api/admin/doctors/${id}/verify`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action }),
         });
         return await res.json();
