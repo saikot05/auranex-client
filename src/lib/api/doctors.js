@@ -1,6 +1,8 @@
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+import { authFetch } from "@/lib/jwt";
 
-export const getAllDoctors = async(filters = {}) => {
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+export const getAllDoctors = async (filters = {}) => {
     try {
         const queryParams = new URLSearchParams({
             search: filters.search || "",
@@ -11,11 +13,9 @@ export const getAllDoctors = async(filters = {}) => {
         });
 
         const res = await fetch(`${baseUrl}/api/doctors?${queryParams.toString()}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            cache: 'no-store'
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
         });
 
         if (!res.ok) throw new Error("Failed to fetch doctors");
@@ -26,12 +26,12 @@ export const getAllDoctors = async(filters = {}) => {
     }
 };
 
-export const getDoctorDetails = async(id) => {
+export const getDoctorDetails = async (id) => {
     try {
         const res = await fetch(`${baseUrl}/api/doctors/${id}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store'
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch doctor details");
         return await res.json();
@@ -41,14 +41,13 @@ export const getDoctorDetails = async(id) => {
     }
 };
 
-export const getDoctorSlots = async(email) => {
+export const getDoctorSlots = async (email) => {
     try {
         if (!email) return { success: false, data: [] };
 
-        const res = await fetch(`${baseUrl}/api/doctor/slots?email=${encodeURIComponent(email)}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store'
+        const res = await authFetch(`${baseUrl}/api/doctor/slots?email=${encodeURIComponent(email)}`, {
+            method: "GET",
+            cache: "no-store",
         });
 
         if (!res.ok) throw new Error("Failed to fetch slots");
@@ -59,13 +58,12 @@ export const getDoctorSlots = async(email) => {
     }
 };
 
-export const getDoctorPrescriptions = async(email) => {
+export const getDoctorPrescriptions = async (email) => {
     try {
         if (!email) return { success: false, data: [] };
-        const res = await fetch(`${baseUrl}/api/doctor/prescriptions?email=${encodeURIComponent(email)}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store'
+        const res = await authFetch(`${baseUrl}/api/doctor/prescriptions?email=${encodeURIComponent(email)}`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch prescriptions");
         return await res.json();
@@ -75,13 +73,12 @@ export const getDoctorPrescriptions = async(email) => {
     }
 };
 
-export const getDoctorAppointments = async(email) => {
+export const getDoctorAppointments = async (email) => {
     try {
         if (!email) return { success: false, data: [] };
-        const res = await fetch(`${baseUrl}/api/appointments/doctor/${encodeURIComponent(email)}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store'
+        const res = await authFetch(`${baseUrl}/api/appointments/doctor/${encodeURIComponent(email)}`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch appointments");
         return await res.json();
@@ -91,13 +88,12 @@ export const getDoctorAppointments = async(email) => {
     }
 };
 
-export const getDoctorProfile = async(email) => {
+export const getDoctorProfile = async (email) => {
     try {
         if (!email) return null;
-        const res = await fetch(`${baseUrl}/api/doctors/profile/${encodeURIComponent(email)}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store'
+        const res = await authFetch(`${baseUrl}/api/doctors/profile/${encodeURIComponent(email)}`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch profile");
         return await res.json();

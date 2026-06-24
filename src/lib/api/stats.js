@@ -1,12 +1,11 @@
+import { authFetch } from "@/lib/jwt";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getPlatformStats = async() => {
     try {
-        const res = await fetch(`${baseUrl}/api/admin/stats`, {
+        const res = await authFetch(`${baseUrl}/api/admin/stats`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             cache: 'no-store'
         });
 

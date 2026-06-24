@@ -1,8 +1,10 @@
+import { authFetch } from "@/lib/jwt";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getMyReviews = async(email) => {
     try {
-        const res = await fetch(`${baseUrl}/api/reviews/patient/${email}`, {
+        const res = await authFetch(`${baseUrl}/api/reviews/patient/${email}`, {
             method: 'GET',
             cache: 'no-store'
         });

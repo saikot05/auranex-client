@@ -1,11 +1,12 @@
+import { authFetch } from "@/lib/jwt";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const getAdminUsers = async() => {
+export const getAdminUsers = async () => {
     try {
-        const res = await fetch(`${baseUrl}/api/admin/users`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store',
+        const res = await authFetch(`${baseUrl}/api/admin/users`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch users");
         return await res.json();
@@ -15,13 +16,12 @@ export const getAdminUsers = async() => {
     }
 };
 
-export const getAdminDoctors = async(status = "") => {
+export const getAdminDoctors = async (status = "") => {
     try {
         const query = status ? `?status=${status}` : "";
-        const res = await fetch(`${baseUrl}/api/admin/doctors${query}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store',
+        const res = await authFetch(`${baseUrl}/api/admin/doctors${query}`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch doctors");
         return await res.json();
@@ -31,17 +31,16 @@ export const getAdminDoctors = async(status = "") => {
     }
 };
 
-export const getAdminAppointments = async(filters = {}) => {
+export const getAdminAppointments = async (filters = {}) => {
     try {
         const queryParams = new URLSearchParams({
             ...(filters.status && { status: filters.status }),
             page: filters.page || 1,
             limit: filters.limit || 10,
         });
-        const res = await fetch(`${baseUrl}/api/admin/appointments?${queryParams}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store',
+        const res = await authFetch(`${baseUrl}/api/admin/appointments?${queryParams}`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch appointments");
         return await res.json();
@@ -51,16 +50,15 @@ export const getAdminAppointments = async(filters = {}) => {
     }
 };
 
-export const getAdminPayments = async(filters = {}) => {
+export const getAdminPayments = async (filters = {}) => {
     try {
         const queryParams = new URLSearchParams({
             page: filters.page || 1,
             limit: filters.limit || 10,
         });
-        const res = await fetch(`${baseUrl}/api/admin/payments?${queryParams}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store',
+        const res = await authFetch(`${baseUrl}/api/admin/payments?${queryParams}`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch payments");
         return await res.json();
@@ -70,12 +68,11 @@ export const getAdminPayments = async(filters = {}) => {
     }
 };
 
-export const getAdminStats = async() => {
+export const getAdminStats = async () => {
     try {
-        const res = await fetch(`${baseUrl}/api/admin/stats`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store',
+        const res = await authFetch(`${baseUrl}/api/admin/stats`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch stats");
         return await res.json();
@@ -85,12 +82,11 @@ export const getAdminStats = async() => {
     }
 };
 
-export const getDoctorPerformance = async() => {
+export const getDoctorPerformance = async () => {
     try {
-        const res = await fetch(`${baseUrl}/api/admin/doctor-performance`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            cache: 'no-store',
+        const res = await authFetch(`${baseUrl}/api/admin/doctor-performance`, {
+            method: "GET",
+            cache: "no-store",
         });
         if (!res.ok) throw new Error("Failed to fetch doctor performance");
         return await res.json();

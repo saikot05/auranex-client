@@ -1,12 +1,11 @@
+import { authFetch } from "@/lib/jwt";
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getAppointments = async(email) => {
     try {
-        const res = await fetch(`${baseUrl}/api/appointments/patient/${email}`, {
+        const res = await authFetch(`${baseUrl}/api/appointments/patient/${email}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             cache: 'no-store'
         });
 
@@ -23,11 +22,8 @@ export const getAppointments = async(email) => {
 
 export const getPaymentHistory = async(email) => {
     try {
-        const res = await fetch(`${baseUrl}/api/appointments/payments/${email}`, {
+        const res = await authFetch(`${baseUrl}/api/appointments/payments/${email}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             cache: 'no-store'
         });
 

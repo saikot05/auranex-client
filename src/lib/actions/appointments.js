@@ -1,21 +1,32 @@
-"use server"
+"use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const rescheduleAppointmentAction = async(id, newDate) => {
+const getAuthHeaders = async () => {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auranex_jwt")?.value;
+    return {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+};
+
+export const rescheduleAppointmentAction = async (id, newDate) => {
     try {
+        const headers = await getAuthHeaders();
         const res = await fetch(`${baseUrl}/api/appointments/reschedule/${id}`, {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ newDate })
+            headers,
+            body: JSON.stringify({ newDate }),
         });
 
         if (!res.ok) throw new Error("Failed to reschedule");
         const data = await res.json();
 
-        if (data.modifiedCount > 0 || data.acknowledged) {
+        if (data.success) {
             revalidatePath("/dashboard/patient/appointments");
             return { success: true, data };
         }
@@ -26,17 +37,18 @@ export const rescheduleAppointmentAction = async(id, newDate) => {
     }
 };
 
-export const cancelAppointmentAction = async(id) => {
+export const cancelAppointmentAction = async (id) => {
     try {
+        const headers = await getAuthHeaders();
         const res = await fetch(`${baseUrl}/api/appointments/cancel/${id}`, {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" }
+            headers,
         });
 
         if (!res.ok) throw new Error("Failed to cancel");
         const data = await res.json();
 
-        if (data.modifiedCount > 0 || data.acknowledged) {
+        if (data.success) {
             revalidatePath("/dashboard/patient/appointments");
             return { success: true, data };
         }
