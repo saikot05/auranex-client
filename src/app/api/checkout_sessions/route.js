@@ -5,7 +5,7 @@ import { stripe } from '../../../lib/stripe';
 export async function POST(req) {
     try {
         const body = await req.json();
-        const { doctorName, amount, doctorId, selectedDate, selectedSlot } = body;
+        const { doctorName, amount, doctorId, selectedDate, selectedSlot, doctorEmail, patientEmail, patientName } = body;
 
         const headersList = await headers();
         const origin = headersList.get('origin');
@@ -25,8 +25,12 @@ export async function POST(req) {
             mode: 'payment',
             metadata: {
                 doctorId,
+                doctorEmail: doctorEmail || '',
+                patientEmail: patientEmail || '',
+                patientName: patientName || '',
                 selectedDate: selectedDate || '',
-                selectedSlot: selectedSlot || ''
+                selectedSlot: selectedSlot || '',
+                doctorName: doctorName || '',
             },
             success_url: `${origin}/find-doctors/${doctorId}/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${origin}/find-doctors/${doctorId}`,
