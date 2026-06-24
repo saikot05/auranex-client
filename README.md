@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AuraNex Client (MediCare Connect)
 
-## Getting Started
+AuraNex (MediCare Connect) is a modern, responsive Hospital Appointment & Healthcare Management System built using Next.js, HeroUI, Gravity UI, and TailwindCSS. It integrates seamlessly with Better Auth for identity management, Stripe for secure payment flows, and an Express/MongoDB backend with JWT-based route verification.
 
-First, run the development server:
+## 🛠️ Technology Stack
+- **Core Framework**: Next.js 16 (App Router, Turbopack)
+- **Styling**: Vanilla CSS, TailwindCSS, DaisyUI
+- **UI Components**: HeroUI, Gravity UI Icons
+- **Authentication**: Better Auth
+- **Payments**: Stripe Checkout Integration
+- **Security**: Client-side JWT utility with dual `localStorage` & Cookie caching for seamless client fetches and next/headers Server Actions forwarding.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## ✨ Core Features
+1. **Doctor Consultations Search**: Interactive search and filtering by specialty or name.
+2. **Stripe Booking Checkout**: Fully integrated Stripe checkout flow that handles booking dates, time slots, patient details, and metadata propagation.
+3. **Dynamic Dashboards**:
+   - **Patient Dashboard**: Dynamic counters showing total appointments, upcoming consults, payment logs, and reviews, complete with rescheduling and cancellation capabilities.
+   - **Doctor Dashboard**: Manage appointment request statuses (pending, accepted, canceled), set schedule slots, write/manage prescriptions, and review performance analytics.
+   - **Admin Dashboard**: Comprehensive platform-wide analytics, user role/status management, doctor verification flow, and global transaction logging.
+4. **Verified Security**: End-to-end JWT token verification for all backend CRUD operations.
+
+## ⚙️ Local Setup
+
+1. **Clone the repository**
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Environment Configuration**: Create a `.env` file in the root of `auranex-client`:
+   ```env
+   NEXT_PUBLIC_BASE_URL=http://localhost:5000
+   BETTER_AUTH_URL=http://localhost:3000
+   STRIPE_PUBLIC_KEY=your_stripe_public_key
+   ```
+4. **Run the Development Server**:
+   ```bash
+   npm run dev
+   ```
+
+## 🔐 JWT Route Protection Flow
+```mermaid
+sequenceDiagram
+    participant User
+    participant NextJS as Next.js Client
+    participant Express as Express Backend
+
+    User->>NextJS: Log In (Better Auth)
+    NextJS->>Express: POST /api/auth/token {email, role}
+    Express-->>NextJS: Signs & Returns JWT
+    NextJS->>NextJS: Store in localStorage & Cookie
+    Note over NextJS: API calls use authFetch() which automatically injects Bearer Token
+    NextJS->>Express: GET /api/appointments/patient/:email (Headers: Bearer JWT)
+    Express->>Express: verifyToken Middleware
+    Express-->>NextJS: Authorized Data Response
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
