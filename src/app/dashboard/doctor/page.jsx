@@ -1,12 +1,31 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { Spinner } from "@heroui/react";
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
 
 const DoctorDashboardHomePage = () => {
     const { data: session, isPending } = useSession();
+    const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(true);
+
+    useEffect(() => {
+        const email = session?.user?.email;
+        if (!email) return;
+        const fetchStats = async () => {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stats/doctor/${encodeURIComponent(email)}`);
+                const data = await res.json();
+                if (data.success) setStats(data.stats);
+            } catch {
+                setStats(null);
+            } finally {
+                setStatsLoading(false);
+            }
+        };
+        fetchStats();
+    }, [session]);
 
     if (isPending) {
         return (
@@ -24,7 +43,13 @@ const DoctorDashboardHomePage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch w-full">
-                <DashboardStats role="doctor" />
+                {statsLoading ? (
+                    <div className="col-span-3 flex justify-center py-8">
+                        <Spinner size="md" color="primary" />
+                    </div>
+                ) : (
+                    <DashboardStats role="doctor" stats={stats} />
+                )}
             </div>
         </div>
     );
