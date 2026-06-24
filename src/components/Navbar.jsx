@@ -113,7 +113,7 @@ export default function Navbar() {
                   <Avatar
                     className="w-9 h-9 border-2 border-blue-500"
                     color="primary"
-                    src={user.image || `https://i.ibb.co.com/s9NDQSpj/mohamad-azaam-1-O8-CJy1-A7-Wo-unsplash.jpg`}
+                    src={user.image || user.photo || user.photoURL || `https://i.ibb.co.com/s9NDQSpj/mohamad-azaam-1-O8-CJy1-A7-Wo-unsplash.jpg`}
                   />
                   <ChevronDown
                     className={`text-blue-400 h-3.5 w-3.5 transition-transform duration-300 ${isProfileOpen ? "rotate-180" : "rotate-0"}`}

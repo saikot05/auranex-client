@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSession, authClient } from "@/lib/auth-client";
-import { storeToken, clearToken } from "@/lib/jwt";
+import { storeToken, clearToken } from "@/lib/authFetch";
 
 export function TokenProvider({ children }) {
     const { data: session } = useSession();

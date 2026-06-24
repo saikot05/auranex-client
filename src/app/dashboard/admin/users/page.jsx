@@ -89,19 +89,12 @@ export default function AdminUsersPage() {
                                 <Table.Row key={user._id} id={user._id}>
                                     <Table.Cell>
                                         <div className="flex items-center gap-3">
-                                            <div className="size-8 rounded-full overflow-hidden bg-default-200 flex items-center justify-center shrink-0">
-                                                {user.photo ? (
-                                                    <img
-                                                        src={user.photo}
-                                                        alt={user.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <span className="text-xs font-medium text-default-600">
-                                                        {user.name?.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                                                    </span>
-                                                )}
-                                            </div>
+                                            <Avatar size="sm">
+                                                <Avatar.Image src={user.image || user.photo || user.photoURL} />
+                                                <Avatar.Fallback>
+                                                    {user.name?.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                                                </Avatar.Fallback>
+                                            </Avatar>
                                             <span className="font-medium text-sm">{user.name}</span>
                                         </div>
                                     </Table.Cell>

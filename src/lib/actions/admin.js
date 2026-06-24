@@ -1,4 +1,4 @@
-import { authFetch } from "@/lib/proxy";
+import { authFetch } from "@/lib/authFetch";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 

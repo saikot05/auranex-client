@@ -5,7 +5,7 @@ import {
     LayoutSideContentLeft, Bell, Briefcase, Gear, House, 
     Person, CreditCard, FileText 
 } from "@gravity-ui/icons";
-import { Button, Drawer } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { Users, Activity, Stethoscope, CalendarCheck, Star } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -88,10 +88,12 @@ export function DashboardSidebar() {
 
     return (
         <>
+            {/* Desktop Sidebar */}
             <aside className="hidden w-64 shrink-0 border-r border-default lg:block h-screen sticky top-0 bg-white dark:bg-zinc-900">
                 {navContent}
             </aside>
 
+            {/* Mobile Header Bar */}
             <div className="p-4 lg:hidden sticky top-0 border-b border-default bg-white dark:bg-zinc-900 w-full flex items-center justify-between z-40">
                 <span className="font-bold text-blue-600">AuraNex</span>
                 
@@ -101,15 +103,31 @@ export function DashboardSidebar() {
                 </Button>
             </div>
 
-            <Drawer isOpen={isOpen} onOpenChange={setIsOpen} placement="left" size="xs">
-                <Drawer.Backdrop />
-                <Drawer.Content className="bg-white dark:bg-zinc-900">
-                    <Drawer.CloseTrigger className="absolute right-4 top-4 z-50 text-foreground" />
-                    <Drawer.Body className="p-0 h-full overflow-y-auto">
-                        {navContent}
-                    </Drawer.Body>
-                </Drawer.Content>
-            </Drawer>
+            {/* Mobile Drawer Overlay */}
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-50 lg:hidden transition-opacity duration-300"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
+
+            {/* Mobile Drawer Container */}
+            <div className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-zinc-900 z-[100] transform transition-transform duration-300 ease-in-out lg:hidden ${
+                isOpen ? "translate-x-0" : "-translate-x-full"
+            }`}>
+                <div className="flex justify-between items-center p-4 border-b border-default">
+                    <span className="font-bold text-blue-600">AuraNex</span>
+                    <button 
+                        onClick={() => setIsOpen(false)}
+                        className="text-foreground p-1 hover:bg-default rounded-md text-lg font-bold"
+                    >
+                        ✕
+                    </button>
+                </div>
+                <div className="h-[calc(100%-60px)] overflow-y-auto">
+                    {navContent}
+                </div>
+            </div>
         </>
     );
 }

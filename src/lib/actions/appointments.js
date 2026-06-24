@@ -1,6 +1,6 @@
 "use server";
 
-import { authFetch } from "@/lib/proxy";
+import { authFetch } from "@/lib/authFetch";
 import { revalidatePath } from "next/cache";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
