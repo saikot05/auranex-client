@@ -1,21 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSession } from "@/lib/auth-client";
-import { issueToken, getToken, clearToken } from "@/lib/jwt";
+import { useSession, authClient } from "@/lib/auth-client";
+import { storeToken, clearToken } from "@/lib/jwt";
 
 export function TokenProvider({ children }) {
     const { data: session } = useSession();
 
     useEffect(() => {
-        const email = session?.user?.email;
-        const role = session?.user?.role;
-
-        if (email && !getToken()) {
-            issueToken();
-        }
-
-        if (!email) {
+        if (session?.user?.email) {
+            authClient.getSession({
+                fetchOptions: {
+                    onSuccess: (ctx) => {
+                        const jwt = ctx.response.headers.get("set-auth-jwt");
+                        if (jwt) storeToken(jwt);
+                    },
+                },
+            });
+        } else {
             clearToken();
         }
     }, [session]);

@@ -2,16 +2,10 @@ import { authClient } from "@/lib/auth-client";
 
 const TOKEN_KEY = "auranex_jwt";
 
-export const issueToken = async () => {
-    try {
-        const { data, error } = await authClient.token();
-        if (error || !data?.token) return null;
-        localStorage.setItem(TOKEN_KEY, data.token);
-        document.cookie = `${TOKEN_KEY}=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
-        return data.token;
-    } catch (err) {
-        return null;
-    }
+export const storeToken = (token) => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(TOKEN_KEY, token);
+    document.cookie = `${TOKEN_KEY}=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
 };
 
 export const getToken = () => {
