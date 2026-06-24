@@ -103,3 +103,39 @@ export const updateDoctorProfile = async(email, profileData) => {
         return { success: false, message: "Network error occurred" };
     }
 };
+
+export const paymentSave = async(session) => {
+    try {
+        const appointmentData = {
+            doctorId: session.metadata?.doctorId,
+            doctorEmail: session.metadata?.doctorEmail,
+            doctorName: session.metadata?.doctorName,
+            patientEmail: session.metadata?.patientEmail || session.customer_details?.email,
+            patientName: session.metadata?.patientName || session.customer_details?.name || '',
+            selectedDate: session.metadata?.selectedDate,
+            selectedSlot: session.metadata?.selectedSlot,
+            amount: session.amount_total ? session.amount_total / 100 : null,
+            stripeSessionId: session.id,
+            paymentStatus: 'paid',
+            appointmentStatus: 'pending',
+        };
+
+        const [paymentRes, appointmentRes] = await Promise.all([
+            fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(appointmentData),
+            }),
+            fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/appointments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(appointmentData),
+            }),
+        ]);
+
+        const paymentResult = await paymentRes.json();
+        return paymentResult;
+    } catch (error) {
+        console.error("Payment save error:", error);
+    }
+};
