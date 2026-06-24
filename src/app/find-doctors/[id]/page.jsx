@@ -6,10 +6,12 @@ import { StarFill, Suitcase, CircleDollar, Calendar, Timeline } from "@gravity-u
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { getDoctorDetails } from "@/lib/api/doctors";
+import { useSession } from "@/lib/auth-client";
 
 export default function DoctorDetailsPage() {
     const { id } = useParams();
     const router = useRouter();
+    const { data: session } = useSession();
     const [doctor, setDoctor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState("");
@@ -39,7 +41,10 @@ export default function DoctorDetailsPage() {
                     doctorName: doctor.doctorName,
                     amount: doctor.consultationFee,
                     doctorId: doctor._id,
-                    selectedDate, 
+                    doctorEmail: doctor.email,
+                    patientEmail: session?.user?.email,
+                    patientName: session?.user?.name,
+                    selectedDate,
                     selectedSlot,
                 }),
             });
