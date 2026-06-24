@@ -1,43 +1,58 @@
+/**
+ * jwt.js — Client-side JWT utility for AuraNex
+ *
+ * Better Auth's JWT plugin handles token *signing* via authClient.token().
+ * This file handles:
+ *   1. Fetching & caching the token (localStorage + cookie)
+ *   2. Attaching the token as Authorization: Bearer on all Express API calls
+ */
+
 import { authClient } from "@/lib/auth-client";
 
 const TOKEN_KEY = "auranex_jwt";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const issueToken = async (email, role) => {
+/** Fetch a fresh JWT from Better Auth and cache it locally. */
+export const issueToken = async () => {
     try {
         const { data, error } = await authClient.token();
-        if (error) {
+        if (error || !data?.token) {
             console.error("Better Auth token error:", error);
             return null;
         }
-        if (data && data.token) {
-            localStorage.setItem(TOKEN_KEY, data.token);
-            document.cookie = `${TOKEN_KEY}=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
-            return data.token;
-        }
+        localStorage.setItem(TOKEN_KEY, data.token);
+        document.cookie = `${TOKEN_KEY}=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
+        return data.token;
     } catch (err) {
-        console.error("Error fetching token from Better Auth:", err);
+        console.error("issueToken error:", err);
+        return null;
     }
-    return null;
 };
 
+/** Read the cached JWT from localStorage (client-side only). */
 export const getToken = () => {
     if (typeof window === "undefined") return null;
     return localStorage.getItem(TOKEN_KEY);
 };
 
+/** Remove the cached JWT on sign-out. */
 export const clearToken = () => {
     if (typeof window === "undefined") return;
     localStorage.removeItem(TOKEN_KEY);
     document.cookie = `${TOKEN_KEY}=; path=/; max-age=0`;
 };
 
+/**
+ * Drop-in replacement for fetch() that automatically injects the Bearer token.
+ * Use this for all protected Express API calls instead of plain fetch().
+ */
 export const authFetch = async (url, options = {}) => {
     const token = getToken();
-    const headers = {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-    return fetch(url, { ...options, headers });
+    return fetch(url, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
 };

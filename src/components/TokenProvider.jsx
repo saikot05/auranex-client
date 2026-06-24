@@ -12,7 +12,7 @@ export function TokenProvider({ children }) {
         const role = session?.user?.role;
 
         if (email && !getToken()) {
-            issueToken(email, role);
+            issueToken();
         }
 
         if (!email) {
