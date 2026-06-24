@@ -1,10 +1,13 @@
 "use client";
 
 import React from "react";
-import { Button, Link } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { ArrowRight, ShieldCheck, HeartPulse, Sparkles } from "@gravity-ui/icons";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
+  const router = useRouter();
+
   return (
     <section className="relative w-full bg-theme text-theme pt-24 pb-20 lg:pt-36 lg:pb-32 overflow-hidden border-b border-zinc-200 dark:border-zinc-900 transition-colors duration-500">
       {/* Background Elements */}
@@ -39,23 +42,21 @@ export default function Hero() {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-2">
               <Button
-                as={Link}
-                href="/appointments"
                 size="lg"
                 radius="xl"
                 className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold shadow-lg shadow-blue-500/20 hover:opacity-90 transition-opacity duration-300"
                 endContent={<ArrowRight className="h-4 w-4" />}
+                onClick={() => router.push("/find-doctors")}
               >
                 Book Appointment
               </Button>
 
               <Button
-                as={Link}
-                href="/doctors"
                 size="lg"
                 radius="xl"
                 variant="bordered"
                 className="w-full sm:w-auto border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 font-semibold transition-all duration-200"
+                onClick={() => router.push("/find-doctors")}
               >
                 Explore Doctors
               </Button>
@@ -71,25 +72,18 @@ export default function Hero() {
             </div>
           </div>
 
-          
           <div className="lg:col-span-5 w-full flex justify-center items-center [perspective:1200px]">
             <div className="relative w-full max-w-[420px] aspect-[4/5] rounded-[2.5rem] bg-gradient-to-tr from-blue-500/10 via-cyan-500/5 to-transparent p-3 border border-zinc-200/60 dark:border-zinc-800/50 [transform-style:preserve-3d] [transform:rotateY(-12deg)_rotateX(6deg)] hover:[transform:rotateY(-4deg)_rotateX(2deg)] transition-transform duration-700 ease-out group">
-              
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/30 to-cyan-500/30 rounded-[2.5rem] blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-700 pointer-events-none" />
-
               <div className="relative w-full h-full rounded-[2.2rem] overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 [transform:translateZ(20px)] transition-all duration-500 shadow-2xl">
-                
-                {/* Clean Image Component without any icons/text overlay */}
                 <img
                   src="https://i.ibb.co/rGmcv49v/vitaly-gariev-e-Vrm8-G3-Uh-YQ-unsplash.jpg"
                   alt="Healthcare Professional"
                   className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
                 />
-                
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

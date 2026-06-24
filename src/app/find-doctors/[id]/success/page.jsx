@@ -2,6 +2,7 @@ import { stripe } from '@/lib/stripe';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { CircleCheckFill, Calendar, Timeline, ArrowLeft, Envelope } from '@gravity-ui/icons';
+import { paymentSave } from '@/lib/actions/doctors';
 
 export default async function Success({ params, searchParams }) {
   const { id } = await params;
@@ -18,6 +19,7 @@ export default async function Success({ params, searchParams }) {
   }
 
   if (session.status === 'complete') {
+    await paymentSave(session);
     const customerEmail = session.customer_details?.email;
     const selectedDate = session.metadata?.selectedDate;
     const selectedSlot = session.metadata?.selectedSlot;
