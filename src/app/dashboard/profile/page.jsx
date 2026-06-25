@@ -17,8 +17,9 @@ export default function ProfileSettingsPage() {
     const { data: session, isPending, refetch } = useSession();
     const user = session?.user;
 
-    const [name, setName] = useState(user?.name || "");
-    const [imageUrl, setImageUrl] = useState(user?.image || "");
+    const [name, setName] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [initialized, setInitialized] = useState(false);
     const [savingProfile, setSavingProfile] = useState(false);
 
     const [currentPassword, setCurrentPassword] = useState("");
@@ -29,6 +30,13 @@ export default function ProfileSettingsPage() {
     const [showConfirm, setShowConfirm] = useState(false);
     const [savingPassword, setSavingPassword] = useState(false);
 
+    useEffect(() => {
+    if (user && !initialized) {
+        setName(user.name || "");
+        setImageUrl(user.image || "");
+        setInitialized(true);
+        }
+    }, [user, initialized]);
 
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
