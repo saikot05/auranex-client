@@ -59,17 +59,19 @@ export default function PaymentHistoryPage() {
                                 <Table.Row key={pay._id || pay.id}>
                                     <Table.Cell>
                                         <div>
-                                            <p className="font-semibold text-sm">{pay.doctorName}</p>
-                                            <p className="text-xs text-muted-foreground">{pay.specialty}</p>
+                                            <p className="font-semibold text-sm">{pay.doctorName || "Doctor"}</p>
+                                            <p className="text-xs text-muted-foreground">{pay.doctorEmail || ""}</p>
                                         </div>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <code className="text-xs bg-muted p-1 rounded font-mono text-primary">
-                                            {pay.transactionId}
+                                            {pay.stripeSessionId ? pay.stripeSessionId.slice(0, 18) + "..." : "—"}
                                         </code>
                                     </Table.Cell>
-                                    <Table.Cell className="text-sm text-default-600">{pay.date}</Table.Cell>
-                                    <Table.Cell className="font-semibold text-sm">${pay.fee}</Table.Cell>
+                                    <Table.Cell className="text-sm text-default-600">
+                                        {pay.createdAt ? new Date(pay.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+                                    </Table.Cell>
+                                    <Table.Cell className="font-semibold text-sm">${pay.amount ?? 0}</Table.Cell>
                                     <Table.Cell>
                                         <div className="flex justify-center">
                                             <Chip color="success" variant="flat" size="sm" radius="sm">

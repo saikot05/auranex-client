@@ -84,15 +84,11 @@ export default function AdminAppointmentsPage() {
                                     </Table.Cell>
                                     <Table.Cell>
                                         <span className="text-sm text-default-600">
-                                            {appt.appointmentDate
-                                                ? new Date(appt.appointmentDate).toLocaleDateString("en-GB", {
-                                                    day: "2-digit", month: "short", year: "numeric",
-                                                })
-                                                : "—"}
+                                            {appt.selectedDate || "—"}
                                         </span>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <span className="text-sm text-default-600">{appt.appointmentTime || "—"}</span>
+                                        <span className="text-sm text-default-600">{appt.selectedSlot || "—"}</span>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Chip

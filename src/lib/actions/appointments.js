@@ -5,11 +5,11 @@ import { revalidatePath } from "next/cache";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const rescheduleAppointmentAction = async (id, newDate) => {
+export const rescheduleAppointmentAction = async (id, newDate, newSlot) => {
     try {
         const res = await authFetch(`${baseUrl}/api/appointments/reschedule/${id}`, {
             method: "PATCH",
-            body: JSON.stringify({ newDate }),
+            body: JSON.stringify({ newDate, newSlot }),
         });
 
         if (!res.ok) throw new Error("Failed to reschedule");

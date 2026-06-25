@@ -4,15 +4,12 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getPlatformStats = async() => {
     try {
-        const res = await authFetch(`${baseUrl}/api/admin/stats`, {
+        const res = await fetch(`${baseUrl}/api/stats/platform`, {
             method: 'GET',
             cache: 'no-store'
         });
-
         if (!res.ok) throw new Error("Failed to fetch stats");
-
-        const data = await res.json();
-        return data;
+        return await res.json();
     } catch (error) {
         console.error("getPlatformStats api error:", error);
         return {

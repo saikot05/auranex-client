@@ -6,10 +6,12 @@ import { Table, Button, Chip, Modal, Input, Spinner } from "@heroui/react";
 import { Calendar, TrashBin } from "@gravity-ui/icons";
 import { getAppointments } from "@/lib/api/appointments";
 import { cancelAppointmentAction, rescheduleAppointmentAction } from "@/lib/actions/appointments";
+import { CheckCircle } from "lucide-react";
 
 export default function MyAppointmentsPage() {
     const { data: session } = useSession();
     const userEmail = session?.user?.email;
+    const isDoctor = session?.user?.role === "doctor";
 
     const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
     const [isCancelOpen, setIsCancelOpen] = useState(false);
@@ -17,7 +19,8 @@ export default function MyAppointmentsPage() {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedAppointment, setSelectedAppointment] = useState(null);
-    const [newDate, setNewDate] = useState("");
+    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedSlot, setSelectedSlot] = useState("");
 
     const loadAppointments = async () => {
         if (!userEmail) return;
@@ -40,12 +43,13 @@ export default function MyAppointmentsPage() {
     }, [userEmail]);
 
     const handleRescheduleSubmit = async () => {
-        if (!selectedAppointment || !newDate) return;
+        if (!selectedAppointment || !selectedDate || !selectedSlot) return;
         try {
-            const result = await rescheduleAppointmentAction(selectedAppointment._id, newDate);
+            const result = await rescheduleAppointmentAction(selectedAppointment._id, selectedDate, selectedSlot);
             if (result && result.success) { 
                 await loadAppointments();
-                setNewDate("");
+                setSelectedDate("");
+                setSelectedSlot("");
                 setIsRescheduleOpen(false); 
             } else {
                 console.error("Reschedule failed:", result?.error);
@@ -82,14 +86,14 @@ export default function MyAppointmentsPage() {
         <div className="space-y-6 w-full p-4">
             <div>
                 <h1 className="text-2xl font-bold">My Appointments</h1>
-                <p className="text-sm text-muted-foreground">View, reschedule, or cancel your doctor consultations.</p>
+                <p className="text-sm text-muted-foreground">{isDoctor ? "Manage your scheduled patient consultations." : "View, reschedule, or cancel your doctor consultations."}</p>
             </div>
 
             <Table variant="secondary">
                 <Table.ScrollContainer>
-                    <Table.Content aria-label="Patient Appointments Table" className="min-w-[600px]">
+                    <Table.Content aria-label="Appointments Table" className="min-w-[600px]">
                         <Table.Header>
-                            <Table.Column isRowHeader>DOCTOR</Table.Column>
+                            <Table.Column isRowHeader>{isDoctor ? "PATIENT" : "DOCTOR"}</Table.Column>
                             <Table.Column>DATE & TIME</Table.Column>
                             <Table.Column>STATUS</Table.Column>
                             <Table.Column align="center">ACTIONS</Table.Column>
@@ -99,34 +103,41 @@ export default function MyAppointmentsPage() {
                                 <Table.Row key={app._id}>
                                     <Table.Cell>
                                         <div>
-                                            <p className="font-semibold">{app.doctorName || "Specialist Doctor"}</p>
-                                            <p className="text-xs text-muted-foreground">{app.specialty || "General Medicine"}</p>
+                                            <p className="font-semibold">{isDoctor ? (app.patientName || "Patient") : (app.doctorName || "Specialist Doctor")}</p>
+                                            {!isDoctor && <p className="text-xs text-muted-foreground">{app.specialty || "General Medicine"}</p>}
                                         </div>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <p className="text-sm font-medium">{app.date}</p>
-                                        <p className="text-xs text-muted-foreground">{app.time || "N/A"}</p>
+                                        <p className="text-sm font-medium">{app.selectedDate}</p>
+                                        <p className="text-xs text-muted-foreground">{app.selectedSlot || "N/A"}</p>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Chip 
-                                            color={app.status === "accepted" ? "success" : app.status === "pending" ? "warning" : "danger"} 
+                                            color={app.appointmentStatus === "accepted" ? "success" : app.appointmentStatus === "pending" ? "warning" : "danger"} 
                                             variant="flat" 
                                             size="sm"
                                             className="capitalize"
                                         >
-                                            {app.status}
+                                            {app.appointmentStatus}
                                         </Chip>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <div className="flex items-center justify-center gap-2">
-                                            {app.status !== "canceled" && (
+                                            {app.appointmentStatus !== "canceled" && (
                                                 <>
-                                                    <Button 
-                                                        size="sm" variant="flat" color="primary" startContent={<Calendar className="w-4 h-4" />}
-                                                        onPress={() => { setSelectedAppointment(app); setIsRescheduleOpen(true); }}
-                                                    >
-                                                        Reschedule
-                                                    </Button>
+                                                    {!isDoctor && (
+                                                        <Button 
+                                                            size="sm" variant="flat" color="primary" startContent={<Calendar className="w-4 h-4" />}
+                                                            onPress={() => { setSelectedAppointment(app); setIsRescheduleOpen(true); }}
+                                                        >
+                                                            Reschedule
+                                                        </Button>
+                                                    )}
+                                                    {isDoctor && (
+                                                        <Button size="sm" variant="flat" color="success" startContent={<CheckCircle className="w-4 h-4" />}>
+                                                            Complete
+                                                        </Button>
+                                                    )}
                                                     <Button 
                                                         size="sm" variant="flat" color="danger" startContent={<TrashBin className="w-4 h-4" />}
                                                         onPress={() => { setSelectedAppointment(app); setIsCancelOpen(true); }}
@@ -153,8 +164,9 @@ export default function MyAppointmentsPage() {
                                 <Modal.Heading>Reschedule Appointment</Modal.Heading>
                             </Modal.Header>
                             <Modal.Body className="space-y-4">
-                                <p className="text-sm text-muted">Choose a new date for your consultation.</p>
-                                <Input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+                                <p className="text-sm text-muted">Choose a new date and time for your consultation.</p>
+                                <Input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+                                <Input type="time" value={selectedSlot} onChange={(e) => setSelectedSlot(e.target.value)} />
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button slot="close" variant="secondary">Close</Button>

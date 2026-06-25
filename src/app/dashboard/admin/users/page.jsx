@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Table, Avatar, Chip, Button, Input } from "@heroui/react";
 import { Lock, Person, TrashBin } from "@gravity-ui/icons";
+import { useSession } from "@/lib/auth-client";
+import { getToken } from "@/lib/authFetch";
 
 import { deleteUser, updateUserStatus } from "@/lib/actions/admin";
 import { getAdminUsers } from "@/lib/api/admin";
@@ -16,13 +18,18 @@ export default function AdminUsersPage() {
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(null);
+    const { data: session } = useSession();
 
     useEffect(() => {
+        if (!session?.user?.email) return;
+        const token = getToken();
+        if (!token) return;
+
         (async () => {
             const res = await getAdminUsers();
             if (res.success) setUsers(res.users);
         })();
-    }, []);
+    }, [session]);
 
     const filtered = users.filter((u) =>
         u.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -90,7 +97,7 @@ export default function AdminUsersPage() {
                                     <Table.Cell>
                                         <div className="flex items-center gap-3">
                                             <Avatar size="sm">
-                                                <Avatar.Image src={user.image || user.photo || user.photoURL} />
+                                                <Avatar.Image src={user.image || user.Photo || user.photoURL} />
                                                 <Avatar.Fallback>
                                                     {user.name?.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                                                 </Avatar.Fallback>

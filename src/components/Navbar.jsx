@@ -21,7 +21,7 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
- useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
@@ -101,7 +101,7 @@ export default function Navbar() {
           <div className="h-6 w-px bg-blue-500/20 dark:bg-blue-500/30" />
 
           <div className="flex items-center gap-3">
-            {isPending ? null : user ? (
+            {!mounted ? null : isPending ? null : user ? (
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen((prev) => !prev)}
@@ -113,7 +113,7 @@ export default function Navbar() {
                   <Avatar
                     className="w-9 h-9 border-2 border-blue-500"
                     color="primary"
-                    src={user.image || user.photo || user.photoURL || `https://i.ibb.co.com/s9NDQSpj/mohamad-azaam-1-O8-CJy1-A7-Wo-unsplash.jpg`}
+                    src={user.image || user.Photo || user.photoURL || `https://i.ibb.co.com/s9NDQSpj/mohamad-azaam-1-O8-CJy1-A7-Wo-unsplash.jpg`}
                   />
                   <ChevronDown
                     className={`text-blue-400 h-3.5 w-3.5 transition-transform duration-300 ${isProfileOpen ? "rotate-180" : "rotate-0"}`}
@@ -211,7 +211,7 @@ export default function Navbar() {
                   </Link>
                 </li>
               ))}
-              {!isPending && user && (
+              {mounted && !isPending && user && (
                 <>
                   <li>
                     <Link
@@ -236,7 +236,7 @@ export default function Navbar() {
             </ul>
             <div className="border-t border-blue-500/10 dark:border-blue-500/20 pt-4">
               <div className="flex flex-col gap-2.5">
-                {!isPending && user ? (
+                {mounted && !isPending && user ? (
                   <div className="flex flex-col gap-2 px-4">
                     <span className="text-xs text-blue-500/70 font-semibold">
                       Signed in as: <span className="text-sm font-bold text-blue-900 dark:text-blue-200">{user.name || "User"}</span>
