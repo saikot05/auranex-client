@@ -149,7 +149,7 @@ auranex-client/
 │   └── api/                 # Next.js API routes (Stripe, Better Auth)
 ├── components/              # Shared UI components (Navbar, etc.)
 ├── lib/                     # Auth client, API helpers
-└── middleware.ts             # Route protection via Better Auth
+└── proxy.js             # Route protection via Better Auth
 ```
 
 ---
