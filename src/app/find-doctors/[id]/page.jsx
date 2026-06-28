@@ -14,7 +14,7 @@ const MONTH_NAMES = [
     "July", "August", "September", "October", "November", "December",
 ];
 
-// Map day-name strings to JS weekday indices (0=Sun … 6=Sat)
+
 const DAY_NAME_TO_INDEX = {
     sunday: 0, sun: 0,
     monday: 1, mon: 1,
@@ -32,7 +32,7 @@ function AvailabilityCalendar({ availableDays = [], selectedDate, onDateSelect }
     const [viewYear, setViewYear] = useState(today.getFullYear());
     const [viewMonth, setViewMonth] = useState(today.getMonth());
 
-    // Parse availableDays (e.g. ["Monday","Wednesday"] or ["2025-06-25",...]) into a set
+    
     const availableWeekdayIndices = new Set();
     const availableAbsoluteDates = new Set();
 
@@ -55,7 +55,7 @@ function AvailabilityCalendar({ availableDays = [], selectedDate, onDateSelect }
 
     const isPast = (date) => date < today;
 
-    // Build calendar grid
+   
     const firstDay = new Date(viewYear, viewMonth, 1).getDay();
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
@@ -68,7 +68,7 @@ function AvailabilityCalendar({ availableDays = [], selectedDate, onDateSelect }
         else setViewMonth(m => m + 1);
     };
 
-    // Format selected date to a human-readable string for booking
+   
     const handleDayClick = (day) => {
         const date = new Date(viewYear, viewMonth, day);
         if (isPast(date) || !isDayAvailable(date)) return;
@@ -82,7 +82,7 @@ function AvailabilityCalendar({ availableDays = [], selectedDate, onDateSelect }
     };
 
     const cells = [];
-    // Empty cells before 1st
+    
     for (let i = 0; i < firstDay; i++) cells.push(null);
     for (let d = 1; d <= daysInMonth; d++) cells.push(d);
 
@@ -204,6 +204,11 @@ export default function DoctorDetailsPage() {
     }, [id]);
 
     const handleBookingCheckout = async () => {
+        if (!session) {
+        router.push('/auth/signin');
+        return;
+        }
+
         if (!selectedDate || !selectedSlot || isBooking) return;
         setIsBooking(true);
 
@@ -436,12 +441,12 @@ export default function DoctorDetailsPage() {
                             <Button
                                 color="primary"
                                 variant="solid"
-                                isDisabled={!selectedDate || !selectedSlot || isBooking}
+                                isDisabled={!!session && (!selectedDate || !selectedSlot || isBooking)}
                                 isLoading={isBooking}
                                 onClick={handleBookingCheckout}
                                 className="w-full font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-xl shadow-blue-600/10 py-6 text-sm"
                             >
-                                {isBooking ? "Redirecting to Payment..." : "Proceed to Pay & Book"}
+                                {isBooking ? "Redirecting to Payment...": !session ? "Login to Book"  : "Proceed to Pay & Book"}
                             </Button>
                         </div>
                     </Card>
